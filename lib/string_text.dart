@@ -16,3 +16,6 @@ List<String> items = [
     'Item3',
     'Item4',
 ];
+List<String> list1 = ["All", "To do", "In Progress", "Done","Plan"];
+String taskType = "All";
+

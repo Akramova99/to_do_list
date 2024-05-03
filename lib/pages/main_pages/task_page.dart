@@ -2,14 +2,16 @@ import 'dart:ui';
 
 import 'package:easy_date_timeline/easy_date_timeline.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:iconly/iconly.dart';
 import 'package:logger/logger.dart';
 import 'package:to_do_list/controller/get_tasks.dart';
-import 'package:to_do_list/controller/sort_get_tasks.dart';
-import 'package:to_do_list/model/add_task_model.dart';
 import 'package:to_do_list/pages/bottom_nav_bar.dart';
+import 'package:to_do_list/string_text.dart';
+
+import '../../controller/date_and_task_list.dart';
+import '../../controller/show_icons.dart';
+import '../all_task_view/all_task_view.dart';
 
 class TaskScreen extends StatefulWidget {
   const TaskScreen({super.key});
@@ -22,19 +24,23 @@ class _TaskScreenState extends State<TaskScreen> with TickerProviderStateMixin {
   final PageController _pageController = PageController();
   int selectedTabIndex = 0;
   GetTasks tasks = Get.put(GetTasks());
-  SortGetTasks sortGetTasks = Get.put(SortGetTasks());
-  void toWork(){
-    sortGetTasks.sumDone();
-    sortGetTasks.sumToDo();
-    sortGetTasks.sumInProgress();
+  ShowIcons showList = Get.put(ShowIcons());
+
+  //SortGetTasks sortGetTasks = Get.put(SortGetTasks());
+  ShowIcons2 taskManagement = Get.put(ShowIcons2());
+
+  void toWork() {
+    taskManagement.iconChange();
+    showList.iconChange();
+    Logger().d(selectedTabIndex.toString());
   }
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-   toWork();
+    toWork();
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -51,7 +57,7 @@ class _TaskScreenState extends State<TaskScreen> with TickerProviderStateMixin {
             // toolbarHeight: 200,
             title: const Text(
               "Today's Tasks",
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22,fontFamily: "PlexSans"),
             ),
             centerTitle: true,
             actions: [
@@ -86,6 +92,8 @@ class _TaskScreenState extends State<TaskScreen> with TickerProviderStateMixin {
                     EasyDateTimeLine(
                       initialDate: DateTime.now(),
                       onDateChange: (selectedDate) {
+                        taskManagement.changeSelectedDate(selectedDate);
+
                         //`selectedDate` the new date selected.
                       },
                       headerProps: const EasyHeaderProps(
@@ -110,8 +118,8 @@ class _TaskScreenState extends State<TaskScreen> with TickerProviderStateMixin {
                     ),
                     TabBar(
                       isScrollable: true,
-
-                      padding: EdgeInsets.zero,
+                      tabAlignment: TabAlignment.start,
+                      padding: const EdgeInsets.only(left: 15, right: 10),
                       indicatorColor: Colors.transparent,
                       dividerColor: Colors.transparent,
                       labelPadding: const EdgeInsets.only(
@@ -121,7 +129,7 @@ class _TaskScreenState extends State<TaskScreen> with TickerProviderStateMixin {
                       onTap: (index) {
                         _pageController.animateToPage(
                           index,
-                          duration: Duration(milliseconds: 300),
+                          duration: const Duration(milliseconds: 300),
                           curve: Curves.ease,
                         );
                       },
@@ -134,14 +142,14 @@ class _TaskScreenState extends State<TaskScreen> with TickerProviderStateMixin {
                           height: 90,
                           child: category("To do"),
                         ),
-                        Tab(height: 90, child: category("In progress")),
+                        Tab(height: 90, child: category("In Progress")),
                         Tab(
                           height: 90,
-                          child: category("Personal"),
+                          child: category("Done"),
                         ),
                         Tab(
                           height: 90,
-                          child: category("Work"),
+                          child: category("Plan"),
                         ),
                       ],
                     ),
@@ -156,120 +164,28 @@ class _TaskScreenState extends State<TaskScreen> with TickerProviderStateMixin {
                         children: [
                           Obx(
                             () => ListView.builder(
-                                itemCount: sortGetTasks.toDo.length +
-                                    sortGetTasks.done.length +
-                                    sortGetTasks.inProgress.length,
+                                itemCount: showList.showList.length,
                                 itemBuilder: (context, index) {
-                                  return Column(
-                                    children: [
-                                      dailyStudy(sortGetTasks.toDo[index]),
-                                      officeProject(sortGetTasks.done[index]),
-                                      officeProject(
-                                          sortGetTasks.inProgress[index]),
-                                      dailyStudy(
-                                          sortGetTasks.inProgress[index]),
-                                      profileProject(
-                                          sortGetTasks.inProgress[index]),
-                                      // SizedBox(
-                                      //   height: 200,
-                                      // )
-                                    ],
-                                  );
+                                  return allTaskView(showList.showList[index]);
                                 }),
                           ),
                           Obx(
                             () => ListView.builder(
-                                itemCount: sortGetTasks.toDo.length +
-                                    sortGetTasks.done.length +
-                                    sortGetTasks.inProgress.length,
+                                itemCount: taskManagement.showList.length,
                                 itemBuilder: (context, index) {
-                                  return Column(
-                                    children: [
-                                      dailyStudy(sortGetTasks.toDo[index]),
-                                      officeProject(sortGetTasks.done[index]),
-                                      officeProject(
-                                          sortGetTasks.inProgress[index]),
-                                      dailyStudy(
-                                          sortGetTasks.inProgress[index]),
-                                      profileProject(
-                                          sortGetTasks.inProgress[index]),
-                                      // SizedBox(
-                                      //   height: 200,
-                                      // )
-                                    ],
-                                  );
+                                  return allTaskView(
+                                      taskManagement.showList[index]);
                                 }),
                           ),
-                          Obx(
-                            () => ListView.builder(
-                                itemCount: sortGetTasks.toDo.length +
-                                    sortGetTasks.done.length +
-                                    sortGetTasks.inProgress.length,
-                                itemBuilder: (context, index) {
-                                  return Column(
-                                    children: [
-                                      dailyStudy(sortGetTasks.toDo[index]),
-                                      officeProject(sortGetTasks.done[index]),
-                                      officeProject(
-                                          sortGetTasks.inProgress[index]),
-                                      dailyStudy(
-                                          sortGetTasks.inProgress[index]),
-                                      profileProject(
-                                          sortGetTasks.inProgress[index]),
-                                      // SizedBox(
-                                      //   height: 200,
-                                      // )
-                                    ],
-                                  );
-                                }),
+                          Container(
+                            color: Colors.yellow,
                           ),
-                          Obx(
-                            () => ListView.builder(
-                                itemCount: sortGetTasks.toDo.length +
-                                    sortGetTasks.done.length +
-                                    sortGetTasks.inProgress.length,
-                                itemBuilder: (context, index) {
-                                  return Column(
-                                    children: [
-                                      dailyStudy(sortGetTasks.toDo[index]),
-                                      officeProject(sortGetTasks.done[index]),
-                                      officeProject(
-                                          sortGetTasks.inProgress[index]),
-                                      dailyStudy(
-                                          sortGetTasks.inProgress[index]),
-                                      profileProject(
-                                          sortGetTasks.inProgress[index]),
-                                      // SizedBox(
-                                      //   height: 200,
-                                      // )
-                                    ],
-                                  );
-                                }),
+                          Container(
+                            color: Colors.blue,
                           ),
-                          Obx(
-                            () => ListView.builder(
-                                itemCount: sortGetTasks.toDo.length +
-                                    sortGetTasks.done.length +
-                                    sortGetTasks.inProgress.length,
-                                itemBuilder: (context, index) {
-                                  return Column(
-                                    children: [
-                                      dailyStudy(sortGetTasks.toDo[index]),
-                                      officeProject(sortGetTasks.done[index]),
-                                      officeProject(
-                                          sortGetTasks.inProgress[index]),
-                                      dailyStudy(
-                                          sortGetTasks.inProgress[index]),
-                                      profileProject(
-                                          sortGetTasks.inProgress[index]),
-                                      // SizedBox(
-                                      //   height: 200,
-                                      // )
-                                    ],
-                                  );
-                                }),
+                          Container(
+                            color: Colors.grey,
                           ),
-
                         ],
                       ),
                     ),
@@ -283,254 +199,21 @@ class _TaskScreenState extends State<TaskScreen> with TickerProviderStateMixin {
 
   Widget category(String category) {
     return Container(
-      margin: const EdgeInsets.only( top: 20),
+      margin: const EdgeInsets.only(left: 5, top: 20),
       padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 6),
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(13),
-          color: category == "All"
+          color: list1[selectedTabIndex] == category
               ? const Color(0xff5f33e1)
               : const Color(0xff5f33e1).withOpacity(0.1)),
       child: Text(
         category,
         style: TextStyle(
+          fontFamily: "Teachers",
             fontSize: 20,
-            color: category == "All" ? Colors.white : Color(0xff5f33e1)),
-      ),
-    );
-  }
-
-  Widget officeProject(Tasks task) {
-    return Container(
-      padding: EdgeInsets.only(left: 15, right: 15, bottom: 15),
-      margin: EdgeInsets.only(left: 20, bottom: 20, right: 20, top: 10),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                task.projectName!,
-                style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(top: 8, right: 8),
-                child: Container(
-                  width: 32,
-                  height: 32,
-                  decoration: BoxDecoration(
-                      color: Colors.pink.shade50,
-                      borderRadius: BorderRadius.circular(10)),
-                  child: Center(
-                    child: Icon(
-                      IconlyBold.work,
-                      size: 24,
-                      color: Colors.pink.withOpacity(0.3),
-                    ),
-                  ),
-                ),
-              )
-            ],
-          ),
-          Text(
-            task.description!,
-            maxLines: 1,
-            style: TextStyle(
-              fontSize: 17,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-          Row(
-            children: [
-              Icon(
-                Icons.access_time_filled_rounded,
-                color: Colors.indigoAccent.shade200,
-                size: 20,
-              ),
-              const SizedBox(
-                width: 4,
-              ),
-              Text(
-                "10:00 AM",
-                style: TextStyle(
-                    fontSize: 13, color: Colors.indigoAccent.shade200),
-              ),
-              Expanded(child: Container()),
-              Container(
-                margin: const EdgeInsets.only(left: 4, top: 4, right: 4),
-                padding: const EdgeInsets.all(4),
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    color: const Color(0xff5f33e1).withOpacity(0.1)),
-                child: Text(
-                  "done",
-                  style: TextStyle(
-                      fontSize: 12, color: Colors.indigoAccent.shade200),
-                ),
-              )
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget dailyStudy(Tasks task) {
-    return Container(
-      padding: const EdgeInsets.only(left: 15, right: 15, bottom: 15),
-      margin: const EdgeInsets.only(left: 20, bottom: 20, right: 20, top: 10),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                task.projectName!,
-                style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(10),
-                child: Container(
-                  width: 32,
-                  height: 32,
-                  decoration: BoxDecoration(
-                      color: Colors.yellow.shade200,
-                      borderRadius: BorderRadius.circular(10)),
-                  child: Center(
-                    child: SvgPicture.asset(
-                      "assets/svg/book.svg",
-                      height: 25,
-                      width: 25,
-                      color: Colors.orange,
-                    ),
-                  ),
-                ),
-              )
-            ],
-          ),
-          Text(
-            task.description!,
-            maxLines: 1,
-            style: const TextStyle(fontSize: 17, overflow: TextOverflow.ellipsis),
-          ),
-          Row(
-            children: [
-              Icon(
-                Icons.access_time_filled_rounded,
-                color: Colors.indigoAccent.shade200,
-                size: 20,
-              ),
-              const SizedBox(
-                width: 4,
-              ),
-              Text(
-                "9:00 PM",
-                style: TextStyle(
-                    fontSize: 13, color: Colors.indigoAccent.shade200),
-              ),
-              Expanded(child: Container()),
-              Container(
-                margin: EdgeInsets.only(left: 4, top: 4, right: 4),
-                padding: EdgeInsets.all(4),
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    color: const Color(0xff5f33e1).withOpacity(0.1)),
-                child: Text(
-                  "9:00 PM",
-                  style: TextStyle(
-                      fontSize: 12, color: Colors.indigoAccent.shade200),
-                ),
-              )
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget profileProject(Tasks task) {
-    return Container(
-      padding: EdgeInsets.only(left: 15, right: 15, bottom: 15),
-      margin: EdgeInsets.only(left: 20, bottom: 20, right: 20, top: 10),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                task.projectName!,
-                style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(10),
-                child: Container(
-                  width: 32,
-                  height: 32,
-                  decoration: BoxDecoration(
-                      color: Colors.pink.shade50,
-                      borderRadius: BorderRadius.circular(10)),
-                  child: Center(
-                    child: SvgPicture.asset(
-                      "assets/svg/user.svg",
-                      height: 25,
-                      width: 25,
-                      color: Colors.purpleAccent.shade100,
-                    ),
-                  ),
-                ),
-              )
-            ],
-          ),
-          Text(
-            task.description!,
-            maxLines: 1,
-            style: TextStyle(fontSize: 17),
-          ),
-          Row(
-            children: [
-              Icon(
-                Icons.access_time_filled_rounded,
-                color: Colors.indigoAccent.shade200,
-                size: 20,
-              ),
-              const SizedBox(
-                width: 4,
-              ),
-              Text(
-                "8:00 AM",
-                style: TextStyle(
-                    fontSize: 13, color: Colors.indigoAccent.shade200),
-              ),
-              Expanded(child: Container()),
-              Container(
-                margin: EdgeInsets.only(left: 4, top: 4, right: 4),
-                padding: EdgeInsets.all(4),
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    color: const Color(0xff5f33e1).withOpacity(0.1)),
-                child: Text(
-                  "In Progress",
-                  style: TextStyle(
-                      fontSize: 12, color: Colors.indigoAccent.shade200),
-                ),
-              )
-            ],
-          ),
-        ],
+            color: list1[selectedTabIndex] == category
+                ? Colors.white
+                : const Color(0xff5f33e1)),
       ),
     );
   }

@@ -23,7 +23,7 @@ class _HomePageState extends State<HomePage> {
   int selectedPage = 0;
 
   final List<dynamic> _pageOptions = [
-    const HomeScreen(),
+     HomeScreen(),
     const TaskScreen(),
     CardScreen(),
      ProfileScreen(),

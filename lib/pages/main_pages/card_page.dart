@@ -47,30 +47,7 @@ class CardScreen extends StatelessWidget {
                 ),
               ),
             ),
-            Column(
-              children: [
-                ListTile(
-                  title: Text(tasks.taskGroup!),
-                ),
-                const Divider(),
-                ListTile(
-                  title: Text(tasks.projectName!),
-                ),
-                const Divider(),
-                ListTile(
-                  title: Text(tasks.description!),
-                ),
-                const Divider(),
-                ListTile(
-                  title: Text(tasks.startTime!),
-                ),
-                const Divider(),
-                ListTile(
-                  title: Text(tasks.endTime!),
-                ),
-                const Divider(),
-              ],
-            )
+
           ],
         ),
       ),

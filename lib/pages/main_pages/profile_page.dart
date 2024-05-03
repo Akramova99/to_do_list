@@ -109,7 +109,7 @@ class ProfileScreen extends StatelessWidget {
                   style: const TextStyle(fontSize: 17),
                 ),
                 Text(
-                  tasks.startTime.toString(),
+                  tasks.startDate!,
                   style: const TextStyle(fontSize: 17),
                 ),
                 Text(

@@ -8,7 +8,7 @@ class TaskGroupCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return  Container(
-      margin: const EdgeInsets.only(top: 20, left: 20, right: 20),
+      margin: const EdgeInsets.only(bottom: 20, left: 20, right: 20),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(10),

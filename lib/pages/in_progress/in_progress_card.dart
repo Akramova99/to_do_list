@@ -23,6 +23,7 @@ class InProgressCard extends StatelessWidget {
               Text(
                 card!.typeTask!,
                 style: TextStyle(
+                  fontFamily: "Manrope",
                     fontWeight: FontWeight.w400,
                     fontSize: 14,
                     color: Colors.grey.shade500),
@@ -53,7 +54,7 @@ class InProgressCard extends StatelessWidget {
                   maxLines: 2,
                   card!.taskName.toString(),
                   style: const TextStyle(
-
+fontFamily: "Manrope",
                       fontWeight: FontWeight.bold, fontSize: 16),
                 ),
               ),

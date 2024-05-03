@@ -8,12 +8,12 @@ import 'package:iconly/iconly.dart';
 import 'package:intl/intl.dart';
 import 'package:logger/logger.dart';
 import 'package:to_do_list/controller/get_tasks.dart';
+import 'package:to_do_list/controller/saveProject.dart';
 import 'package:to_do_list/pages/bottom_nav_bar.dart';
 import 'package:to_do_list/service/save_add_project.dart';
 
 import '../../controller/menu_controller.dart';
 import '../../controller/time_picker_controller.dart';
-import '../../model/add_task_model.dart';
 
 class AddProject extends StatelessWidget {
   static const String id = "add_project";
@@ -24,6 +24,7 @@ class AddProject extends StatelessWidget {
   final TextEditingController descriptionCont = TextEditingController();
   final ExpansionTileMenu expansionTile = Get.put(ExpansionTileMenu());
   final GlobalKey popupMenuButtonKey = GlobalKey();
+
 
   final String item1 = "Profile";
   final String item2 = "Daily Study";
@@ -42,32 +43,40 @@ class AddProject extends StatelessWidget {
     } else if (menu.title.value == "Profile") {
       menu.changeIconData(CupertinoIcons.profile_circled);
     }
-    void saveProject() {
-      String projectName = nameProjectCont.text.trim();
-      String description = descriptionCont.text.trim();
-      if (projectName.isNotEmpty && description.isNotEmpty) {
-        Tasks tasks = Tasks(
-          taskGroup: menu.title.value,
-          projectName: projectName,
-          description: description,
-          startTime:
-              "${dateTimePicker.selectedDate.value.day} ${DateFormat('MMMM').format(dateTimePicker.selectedDate.value)} , ${dateTimePicker.selectedDate.value.year} ",
-          endTime:
-              "${dateTimePicker.selectedEndDate.value.day} ${DateFormat('MMMM').format(dateTimePicker.selectedEndDate.value)} , ${dateTimePicker.selectedEndDate.value.year} ",
-        );
-        Logger().e(menu.title.value);
-        Logger().e(tasks.taskGroup);
-        SaveAddProject.storedProject(obj: tasks, objKey: DateTime.now().toString());
-      }
-      Logger().e(menu.title.value);
 
-
-    }
     Future<void> getProject()async{
       SaveAddProject.getTasks();
 
     }
-
+    void _handleContainerTap({required DateTime date}) async {
+      if (GetPlatform.isAndroid) {
+        final DateTime? dateTime = await showDatePicker(
+            context: context,
+            firstDate: DateTime(2000),
+            lastDate: DateTime(3000),
+            initialDate: dateTimePicker.selectedDate.value
+        );
+        if (dateTime != null) {
+          dateTimePicker.changeDate(dateTime);
+        }
+      } else if (GetPlatform.isIOS) {
+        showCupertinoModalPopup(
+            context: context,
+            builder: (BuildContext context) => SizedBox(
+              height: 250,
+              child: CupertinoDatePicker(
+                backgroundColor: Colors.white,
+                initialDateTime:date,
+                onDateTimeChanged: (DateTime dateTime) {
+                  dateTimePicker.changeDate(dateTime);
+                },
+                use24hFormat: true,
+                mode: CupertinoDatePickerMode.date,
+              ),
+            )
+        );
+      }
+    }
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -325,153 +334,108 @@ class AddProject extends StatelessWidget {
                     ],
                   ),
                 ),
-                Container(
-                  margin: const EdgeInsets.only(top: 20, left: 20, right: 20),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Row(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(10),
-                        child: SizedBox(
-                          width: 40,
-                          height: 40,
-                          child: Center(
-                            child: SvgPicture.asset(
-                              "assets/svg/Group.svg",
-                              height: 21,
+                GestureDetector(
+                  onTap: (){
+                   _handleContainerTap(date: dateTimePicker.selectedDate.value);
+                  },
+                  child: Container(
+                    margin: const EdgeInsets.only(top: 20, left: 20, right: 20),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Row(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(10),
+                          child: SizedBox(
+                            width: 40,
+                            height: 40,
+                            child: Center(
+                              child: SvgPicture.asset(
+                                "assets/svg/Group.svg",
+                                height: 21,
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            "Start Date",
-                            style: TextStyle(
-                                fontSize: 12, fontWeight: FontWeight.w400),
-                          ),
-                          Obx(
-                            () => Text(
-                              "${dateTimePicker.selectedDate.value.day} ${DateFormat('MMMM').format(dateTimePicker.selectedDate.value)} , ${dateTimePicker.selectedDate.value.year} ",
-                              style: const TextStyle(
-                                  fontSize: 18, fontWeight: FontWeight.w700),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              "Start Date",
+                              style: TextStyle(
+                                  fontSize: 12, fontWeight: FontWeight.w400),
                             ),
-                          )
-                        ],
-                      ),
-                      Expanded(child: Container()),
-                      IconButton(
-                          onPressed: () async {
-                            if (GetPlatform.isAndroid) {
-                              final DateTime? dateTime = await showDatePicker(
-                                  context: context,
-                                  firstDate: DateTime(2000),
-                                  lastDate: DateTime(3000),
-                                  initialDate:
-                                      dateTimePicker.selectedDate.value);
-                              if (dateTime != null) {
-                                dateTimePicker.changeDate(dateTime);
-                              }
-                            } else if (GetPlatform.isIOS) {
-                              showCupertinoModalPopup(
-                                  context: context,
-                                  builder: (BuildContext context) => SizedBox(
-                                        height: 250,
-                                        child: CupertinoDatePicker(
-                                          backgroundColor: Colors.white,
-                                          initialDateTime:
-                                              dateTimePicker.selectedDate.value,
-                                          onDateTimeChanged:
-                                              (DateTime dateTime) {
-                                            dateTimePicker.changeDate(dateTime);
-                                          },
-                                          use24hFormat: true,
-                                          mode: CupertinoDatePickerMode.date,
-                                        ),
-                                      ));
-                            }
-                          },
-                          icon: Icon(IconlyBold.arrow_down_2))
-                    ],
+                            Obx(
+                              () => Text(
+                                "${dateTimePicker.selectedDate.value.day} ${DateFormat('MMMM').format(dateTimePicker.selectedDate.value)} , ${dateTimePicker.selectedDate.value.year} ",
+                                style: const TextStyle(
+                                    fontSize: 18, fontWeight: FontWeight.w700),
+                              ),
+                            )
+                          ],
+                        ),
+                        Expanded(child: Container()),
+                        IconButton(
+                            onPressed: () async {
+                              _handleContainerTap(date: dateTimePicker.selectedDate.value);
+                            },
+                            icon: const Icon(IconlyBold.arrow_down_2))
+                      ],
+                    ),
                   ),
                 ),
-                Container(
-                  margin: EdgeInsets.only(top: 20, left: 20, right: 20),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Row(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(10),
-                        child: SizedBox(
-                          width: 40,
-                          height: 40,
-                          child: Center(
-                            child: SvgPicture.asset(
-                              "assets/svg/Group.svg",
-                              height: 21,
+                GestureDetector(
+                  onTap: (){
+                    _handleContainerTap(date: dateTimePicker.selectedEndDate.value);
+                  },
+                  child: Container(
+                    margin: const EdgeInsets.only(top: 20, left: 20, right: 20),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Row(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(10),
+                          child: SizedBox(
+                            width: 40,
+                            height: 40,
+                            child: Center(
+                              child: SvgPicture.asset(
+                                "assets/svg/Group.svg",
+                                height: 21,
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "End Date",
-                            style: TextStyle(
-                                fontSize: 12, fontWeight: FontWeight.w400),
-                          ),
-                          Obx(
-                            () => Text(
-                              "${dateTimePicker.selectedEndDate.value.day} ${DateFormat('MMMM').format(dateTimePicker.selectedEndDate.value)} , ${dateTimePicker.selectedEndDate.value.year} ",
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              "End Date",
                               style: TextStyle(
-                                  fontSize: 18, fontWeight: FontWeight.w700),
+                                  fontSize: 12, fontWeight: FontWeight.w400),
                             ),
-                          )
-                        ],
-                      ),
-                      Expanded(child: Container()),
-                      IconButton(
-                          onPressed: () async {
-                            if (GetPlatform.isAndroid) {
-                              final DateTime? dateTime = await showDatePicker(
-                                  context: context,
-                                  firstDate: DateTime(2000),
-                                  lastDate: DateTime(3000),
-                                  initialDate:
-                                      dateTimePicker.selectedEndDate.value);
-                              if (dateTime != null) {
-                                dateTimePicker.changeEndDate(dateTime);
-                              } else if (GetPlatform.isIOS) {
-                                showCupertinoModalPopup(
-                                    context: context,
-                                    builder: (BuildContext context) => SizedBox(
-                                          height: 250,
-                                          child: CupertinoDatePicker(
-                                            backgroundColor: Colors.white,
-                                            initialDateTime: dateTimePicker
-                                                .selectedEndDate.value,
-                                            onDateTimeChanged:
-                                                (DateTime dateTime) {
-                                              dateTimePicker
-                                                  .changeEndDate(dateTime);
-                                            },
-                                            use24hFormat: true,
-                                            mode: CupertinoDatePickerMode.date,
-                                          ),
-                                        ));
-                              }
-                            }
-                          },
-                          icon: const Icon(IconlyBold.arrow_down_2))
-                    ],
+                            Obx(
+                              () => Text(
+                                "${dateTimePicker.selectedEndDate.value.day} ${DateFormat('MMMM').format(dateTimePicker.selectedEndDate.value)} , ${dateTimePicker.selectedEndDate.value.year} ",
+                                style: TextStyle(
+                                    fontSize: 18, fontWeight: FontWeight.w700),
+                              ),
+                            )
+                          ],
+                        ),
+                        Expanded(child: Container()),
+                        IconButton(
+                            onPressed: () async {
+                              _handleContainerTap(date: dateTimePicker.selectedEndDate.value);
+                            },
+                            icon: const Icon(IconlyBold.arrow_down_2))
+                      ],
+                    ),
                   ),
                 ),
               ],
@@ -481,7 +445,7 @@ class AddProject extends StatelessWidget {
       ),
       bottomNavigationBar: GestureDetector(
         onTap: () {
-          saveProject();
+          SaveProject.saveProject(nameProjectCont.text.trim(),descriptionCont.text.trim());
           getProject();
           tasks.addTask();
           nameProjectCont.clear();
@@ -493,7 +457,7 @@ class AddProject extends StatelessWidget {
           margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
           height: 50.0,
           decoration: BoxDecoration(
-            color: Color(0xff4147D5),
+            color: const Color(0xff4147D5),
             borderRadius: BorderRadius.circular(20.0),
           ),
           child: const Row(

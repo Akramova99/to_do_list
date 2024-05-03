@@ -49,7 +49,6 @@ class SaveAddProject {
       Tasks userTasks = Tasks.fromJson(map);
 
       tasks.add(userTasks);
-      Logger().i(userTasks.description);
     }
     return tasks;
   }
