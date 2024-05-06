@@ -4,13 +4,11 @@ import 'package:easy_date_timeline/easy_date_timeline.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconly/iconly.dart';
-import 'package:logger/logger.dart';
-import 'package:to_do_list/controller/get_tasks.dart';
 import 'package:to_do_list/pages/bottom_nav_bar.dart';
+import 'package:to_do_list/service/hive_database.dart';
 import 'package:to_do_list/string_text.dart';
 
-import '../../controller/date_and_task_list.dart';
-import '../../controller/show_icons.dart';
+import '../../controller/get2.dart';
 import '../all_task_view/all_task_view.dart';
 
 class TaskScreen extends StatefulWidget {
@@ -22,24 +20,27 @@ class TaskScreen extends StatefulWidget {
 
 class _TaskScreenState extends State<TaskScreen> with TickerProviderStateMixin {
   final PageController _pageController = PageController();
+  Get2 get2 = Get.put(Get2());
   int selectedTabIndex = 0;
-  GetTasks tasks = Get.put(GetTasks());
-  ShowIcons showList = Get.put(ShowIcons());
+  HiveService hiveService =HiveService();
 
-  //SortGetTasks sortGetTasks = Get.put(SortGetTasks());
-  ShowIcons2 taskManagement = Get.put(ShowIcons2());
+  // GetTasks tasks = Get.put(GetTasks());
+  // ShowIcons showList = Get.put(ShowIcons());
+  //
+  // //SortGetTasks sortGetTasks = Get.put(SortGetTasks());
+  // ShowIcons2 taskManagement = Get.put(ShowIcons2());
 
-  void toWork() {
-    taskManagement.iconChange();
-    showList.iconChange();
-    Logger().d(selectedTabIndex.toString());
-  }
+  // void toWork() {
+  //   taskManagement.iconChange();
+  //   showList.iconChange();
+  //   Logger().d(selectedTabIndex.toString());
+  // }
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    toWork();
+    //  toWork();
   }
 
   @override
@@ -57,13 +58,16 @@ class _TaskScreenState extends State<TaskScreen> with TickerProviderStateMixin {
             // toolbarHeight: 200,
             title: const Text(
               "Today's Tasks",
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22,fontFamily: "PlexSans"),
+              style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 22,
+                  fontFamily: "PlexSans"),
             ),
             centerTitle: true,
             actions: [
               IconButton(
                   onPressed: () {
-                    toWork();
+                    hiveService.deleteProject();
                   },
                   icon: const Badge(child: Icon(IconlyBold.notification)))
             ],
@@ -92,7 +96,8 @@ class _TaskScreenState extends State<TaskScreen> with TickerProviderStateMixin {
                     EasyDateTimeLine(
                       initialDate: DateTime.now(),
                       onDateChange: (selectedDate) {
-                        taskManagement.changeSelectedDate(selectedDate);
+                        get2.dateTask(selectedDate);
+                        // taskManagement.changeSelectedDate(selectedDate);
 
                         //`selectedDate` the new date selected.
                       },
@@ -164,19 +169,22 @@ class _TaskScreenState extends State<TaskScreen> with TickerProviderStateMixin {
                         children: [
                           Obx(
                             () => ListView.builder(
-                                itemCount: showList.showList.length,
+                                itemCount: get2.projects.length,
                                 itemBuilder: (context, index) {
-                                  return allTaskView(showList.showList[index]);
+                                  return allTaskView(get2.projects[index]);
                                 }),
                           ),
-                          Obx(
-                            () => ListView.builder(
-                                itemCount: taskManagement.showList.length,
-                                itemBuilder: (context, index) {
-                                  return allTaskView(
-                                      taskManagement.showList[index]);
-                                }),
+                          Container(
+                            color: Colors.yellow,
                           ),
+                          // Obx(
+                          //   () => ListView.builder(
+                          //       itemCount: taskManagement.showList.length,
+                          //       itemBuilder: (context, index) {
+                          //         return allTaskView(
+                          //             taskManagement.showList[index]);
+                          //       }),
+                          // ),
                           Container(
                             color: Colors.yellow,
                           ),
@@ -209,7 +217,7 @@ class _TaskScreenState extends State<TaskScreen> with TickerProviderStateMixin {
       child: Text(
         category,
         style: TextStyle(
-          fontFamily: "Teachers",
+            fontFamily: "Teachers",
             fontSize: 20,
             color: list1[selectedTabIndex] == category
                 ? Colors.white

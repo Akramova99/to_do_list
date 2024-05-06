@@ -1,8 +1,6 @@
 import 'dart:ui';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:iconly/iconly.dart';
 import 'package:to_do_list/pages/bottom_nav_bar.dart';
 import 'package:to_do_list/string_text.dart';
@@ -16,8 +14,6 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen>
     with SingleTickerProviderStateMixin {
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -43,16 +39,16 @@ class _SplashScreenState extends State<SplashScreen>
           ListView(
             children: [
               Image.asset(
-                "assets/images/girl.png",
+                "assets/images/girl1.png",
               ),
-              SizedBox(
+              const SizedBox(
                 height: 50,
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 40.0),
                 child: Text(
                   title1,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 25,
                     fontWeight: FontWeight.bold,
                   ),
@@ -100,10 +96,7 @@ class _SplashScreenState extends State<SplashScreen>
                         style: TextStyle(color: Colors.white),
                       ),
                       Expanded(child: Container()),
-                      IconButton(
-                          onPressed: () {},
-                          icon: const Icon(IconlyBold.arrow_right,
-                              color: Colors.white)),
+                      const Icon(IconlyBold.arrow_right, color: Colors.white),
                     ],
                   ),
                 ),

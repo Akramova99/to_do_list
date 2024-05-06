@@ -1,11 +1,9 @@
 import 'dart:ui';
 
-import 'package:easy_date_timeline/easy_date_timeline.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:to_do_list/controller/time_picker_controller.dart';
 
-import '../../controller/get_tasks.dart';
 import '../../model/add_task_model.dart';
 
 class ProfileScreen extends StatelessWidget {
@@ -14,7 +12,6 @@ class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     DateTimePicker timePicker = Get.put(DateTimePicker());
-    GetTasks tasks = Get.put(GetTasks());
     return Scaffold(
       appBar: AppBar(
       ),
@@ -34,32 +31,6 @@ class ProfileScreen extends StatelessWidget {
                       begin: Alignment.topLeft,
                       end: Alignment.bottomCenter,
                       colors: [Colors.white60, Colors.white]),
-                ),
-              ),
-            ),
-            Obx(
-              () => EasyInfiniteDateTimeLine(
-                firstDate: DateTime(2000),
-                focusDate: timePicker.selectedDate.value,
-                lastDate: DateTime(3000, 12, 31),
-                onDateChange: (selectedDate) {
-                  timePicker.changeDate(selectedDate);
-                },
-                selectionMode: const SelectionMode.autoCenter(),
-                dayProps: const EasyDayProps(
-                  dayStructure: DayStructure.monthDayNumDayStr,
-                  inactiveDayStyle: DayStyle(
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.all(Radius.circular(8)),
-                    ),
-                  ),
-                  activeDayStyle: DayStyle(
-                    decoration: BoxDecoration(
-                      color: Color(0xff5f33e1),
-                      borderRadius: BorderRadius.all(Radius.circular(8)),
-                    ),
-                  ),
                 ),
               ),
             ),

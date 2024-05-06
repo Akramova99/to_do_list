@@ -6,11 +6,10 @@ import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:iconly/iconly.dart';
 import 'package:intl/intl.dart';
-import 'package:logger/logger.dart';
-import 'package:to_do_list/controller/get_tasks.dart';
+import 'package:to_do_list/controller/get2.dart';
 import 'package:to_do_list/controller/saveProject.dart';
 import 'package:to_do_list/pages/bottom_nav_bar.dart';
-import 'package:to_do_list/service/save_add_project.dart';
+import 'package:to_do_list/service/flutter_toast.dart';
 
 import '../../controller/menu_controller.dart';
 import '../../controller/time_picker_controller.dart';
@@ -25,7 +24,6 @@ class AddProject extends StatelessWidget {
   final ExpansionTileMenu expansionTile = Get.put(ExpansionTileMenu());
   final GlobalKey popupMenuButtonKey = GlobalKey();
 
-
   final String item1 = "Profile";
   final String item2 = "Daily Study";
   final String item3 = "Work";
@@ -33,28 +31,17 @@ class AddProject extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     DateTimePicker dateTimePicker = Get.put(DateTimePicker());
+    Get2 get2 = Get.put(Get2());
     ExpansionTileMenu menu = Get.put(ExpansionTileMenu());
-    GetTasks tasks =Get.put( GetTasks());
+    SaveProject saveProject = Get.put(SaveProject());
 
-    if (menu.title.value == "Daily Study") {
-      menu.changeIconData(CupertinoIcons.book_fill);
-    } else if (menu.title.value == "Work") {
-      menu.changeIconData(IconlyBold.work);
-    } else if (menu.title.value == "Profile") {
-      menu.changeIconData(CupertinoIcons.profile_circled);
-    }
-
-    Future<void> getProject()async{
-      SaveAddProject.getTasks();
-
-    }
-    void _handleContainerTap({required DateTime date}) async {
+    void startDate({required DateTime date}) async {
       if (GetPlatform.isAndroid) {
         final DateTime? dateTime = await showDatePicker(
-            context: context,
-            firstDate: DateTime(2000),
-            lastDate: DateTime(3000),
-            initialDate: dateTimePicker.selectedDate.value
+          context: context,
+          firstDate: DateTime(2000),
+          lastDate: DateTime(3000),
+          initialDate: DateTime.now(),
         );
         if (dateTime != null) {
           dateTimePicker.changeDate(dateTime);
@@ -63,20 +50,53 @@ class AddProject extends StatelessWidget {
         showCupertinoModalPopup(
             context: context,
             builder: (BuildContext context) => SizedBox(
-              height: 250,
-              child: CupertinoDatePicker(
-                backgroundColor: Colors.white,
-                initialDateTime:date,
-                onDateTimeChanged: (DateTime dateTime) {
-                  dateTimePicker.changeDate(dateTime);
-                },
-                use24hFormat: true,
-                mode: CupertinoDatePickerMode.date,
-              ),
-            )
-        );
+                  height: 250,
+                  child: CupertinoDatePicker(
+                    backgroundColor: Colors.white,
+                    initialDateTime: date,
+                    onDateTimeChanged: (DateTime dateTime) {
+                      dateTimePicker.changeDate(dateTime);
+                    },
+                    use24hFormat: true,
+                    mode: CupertinoDatePickerMode.date,
+                  ),
+                ));
       }
     }
+
+    void endDate({required DateTime date}) async {
+      if (GetPlatform.isAndroid) {
+        final DateTime? dateTime = await showDatePicker(
+          context: context,
+          firstDate: DateTime(2000),
+          lastDate: DateTime(3000),
+          initialDate: dateTimePicker.selectedDate.value,
+        );
+        if (dateTime != null &&
+            dateTime.isAfter(dateTimePicker.selectedDate.value
+                .subtract(const Duration(days: 1)))) {
+          dateTimePicker.changeEndDate(dateTime);
+        } else {
+          showToast("Not a valid end date");
+        }
+      } else if (GetPlatform.isIOS) {
+        showCupertinoModalPopup(
+            context: context,
+            builder: (BuildContext context) => SizedBox(
+                  height: 250,
+                  child: CupertinoDatePicker(
+                    backgroundColor: Colors.white,
+                    initialDateTime: date,
+                    onDateTimeChanged: (DateTime dateTime) {
+                      dateTimePicker.changeEndDate(dateTime);
+                    },
+                    use24hFormat: true,
+                    mode: CupertinoDatePickerMode.date,
+                  ),
+                ));
+      }
+    }
+
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -87,7 +107,10 @@ class AddProject extends StatelessWidget {
         ),
         title: const Text(
           "Add Project",
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              fontFamily: "PlexSans"),
         ),
         centerTitle: true,
         actions: [
@@ -138,7 +161,11 @@ class AddProject extends StatelessWidget {
                                 borderRadius: BorderRadius.circular(10)),
                             child: Center(
                               child: Icon(
-                                menu.iconData.value,
+                                menu.title.value == "Work"
+                                    ? IconlyBold.work
+                                    : (menu.title.value == "Daily Study"
+                                        ? CupertinoIcons.book_fill
+                                        : CupertinoIcons.profile_circled),
                                 size: 20,
                                 color: menu.colorIcon.value,
                               ),
@@ -154,14 +181,14 @@ class AddProject extends StatelessWidget {
                           ),
                           Obx(() => Text(
                                 menu.title.value,
-                                style: TextStyle(fontWeight: FontWeight.bold),
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold),
                               )),
                         ],
                       ),
                       trailing: PopupMenuButton(
                         key: popupMenuButtonKey,
-
-                        child: Icon(IconlyBold.arrow_down_2),
+                        child: const Icon(IconlyBold.arrow_down_2),
                         itemBuilder: (BuildContext context) => [
                           PopupMenuItem(
                             value: item1,
@@ -187,7 +214,12 @@ class AddProject extends StatelessWidget {
                                                   BorderRadius.circular(10)),
                                           child: Center(
                                             child: Icon(
-                                              menu.iconData.value,
+                                              item1 == "Work"
+                                                  ? IconlyBold.work
+                                                  : (item3 == "Daily Study"
+                                                      ? CupertinoIcons.book_fill
+                                                      : CupertinoIcons
+                                                          .profile_circled),
                                               size: 20,
                                               color: menu.colorIcon.value,
                                             ),
@@ -222,7 +254,12 @@ class AddProject extends StatelessWidget {
                                                   BorderRadius.circular(10)),
                                           child: Center(
                                             child: Icon(
-                                              menu.iconData.value,
+                                              item1 == "Work"
+                                                  ? IconlyBold.work
+                                                  : (item2 == "Daily Study"
+                                                      ? CupertinoIcons.book_fill
+                                                      : CupertinoIcons
+                                                          .profile_circled),
                                               size: 20,
                                               color: menu.colorIcon.value,
                                             ),
@@ -255,7 +292,12 @@ class AddProject extends StatelessWidget {
                                                 BorderRadius.circular(10)),
                                         child: Center(
                                           child: Icon(
-                                            menu.iconData.value,
+                                            item3 == "Work"
+                                                ? IconlyBold.work
+                                                : (item2 == "Daily Study"
+                                                    ? CupertinoIcons.book_fill
+                                                    : CupertinoIcons
+                                                        .profile_circled),
                                             size: 20,
                                             color: menu.colorIcon.value,
                                           ),
@@ -335,8 +377,8 @@ class AddProject extends StatelessWidget {
                   ),
                 ),
                 GestureDetector(
-                  onTap: (){
-                   _handleContainerTap(date: dateTimePicker.selectedDate.value);
+                  onTap: () {
+                    startDate(date: dateTimePicker.selectedDate.value);
                   },
                   child: Container(
                     margin: const EdgeInsets.only(top: 20, left: 20, right: 20),
@@ -377,18 +419,14 @@ class AddProject extends StatelessWidget {
                           ],
                         ),
                         Expanded(child: Container()),
-                        IconButton(
-                            onPressed: () async {
-                              _handleContainerTap(date: dateTimePicker.selectedDate.value);
-                            },
-                            icon: const Icon(IconlyBold.arrow_down_2))
+                        const Icon(IconlyBold.arrow_down_2)
                       ],
                     ),
                   ),
                 ),
                 GestureDetector(
-                  onTap: (){
-                    _handleContainerTap(date: dateTimePicker.selectedEndDate.value);
+                  onTap: () {
+                    endDate(date: dateTimePicker.selectedEndDate.value);
                   },
                   child: Container(
                     margin: const EdgeInsets.only(top: 20, left: 20, right: 20),
@@ -422,18 +460,14 @@ class AddProject extends StatelessWidget {
                             Obx(
                               () => Text(
                                 "${dateTimePicker.selectedEndDate.value.day} ${DateFormat('MMMM').format(dateTimePicker.selectedEndDate.value)} , ${dateTimePicker.selectedEndDate.value.year} ",
-                                style: TextStyle(
+                                style: const TextStyle(
                                     fontSize: 18, fontWeight: FontWeight.w700),
                               ),
                             )
                           ],
                         ),
                         Expanded(child: Container()),
-                        IconButton(
-                            onPressed: () async {
-                              _handleContainerTap(date: dateTimePicker.selectedEndDate.value);
-                            },
-                            icon: const Icon(IconlyBold.arrow_down_2))
+                        const Icon(IconlyBold.arrow_down_2)
                       ],
                     ),
                   ),
@@ -445,13 +479,12 @@ class AddProject extends StatelessWidget {
       ),
       bottomNavigationBar: GestureDetector(
         onTap: () {
-          SaveProject.saveProject(nameProjectCont.text.trim(),descriptionCont.text.trim());
-          getProject();
-          tasks.addTask();
+          saveProject.storeProject(
+              nameProjectCont.text.trim(), descriptionCont.text.trim());
+          get2.dateTask(DateTime.now());
           nameProjectCont.clear();
           descriptionCont.clear();
           dateTimePicker.makeInitial();
-
         },
         child: Container(
           margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),

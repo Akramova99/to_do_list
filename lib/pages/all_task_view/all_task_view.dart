@@ -1,11 +1,10 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:to_do_list/controller/show_icons.dart';
-
+import 'package:iconly/iconly.dart';
 import '../../model/add_task_model.dart';
 
 Widget allTaskView(Tasks task) {
-  ShowIcons showIcons = Get.put(ShowIcons());
+  // ShowIcons showIcons = Get.put(ShowIcons());
   return Container(
     padding: const EdgeInsets.only(left: 15, right: 15, bottom: 15),
     margin: const EdgeInsets.only(left: 20, bottom: 20, right: 20, top: 10),
@@ -23,6 +22,7 @@ Widget allTaskView(Tasks task) {
               task.projectName!,
               style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
             ),
+
             Padding(
               padding: const EdgeInsets.only(top: 8, right: 8),
               child: Container(
@@ -32,14 +32,19 @@ Widget allTaskView(Tasks task) {
                     color: Colors.pink.shade50,
                     borderRadius: BorderRadius.circular(10)),
                 child: Center(
-                  child: Obx(()=>Icon(
-                    showIcons.showIcon.value,
+                  child:
+                  Icon(
+                    task.taskGroup! == "Work"
+                        ? IconlyBold.work
+                        : (task.taskGroup! == "Daily Study"
+                            ? CupertinoIcons.book_fill
+                            : CupertinoIcons.profile_circled),
                     size: 24,
                     color: Colors.pink.withOpacity(0.3),
-                  ),)
+                  ),
                 ),
               ),
-            )
+            ),
           ],
         ),
         Text(

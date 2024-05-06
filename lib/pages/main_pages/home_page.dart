@@ -3,9 +3,12 @@ import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
 import 'package:iconly/iconly.dart';
 import 'package:logger/logger.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
+import 'package:to_do_list/controller/get2.dart';
+import 'package:to_do_list/pages/main_pages/view_tasks.dart';
 import 'package:to_do_list/string_text.dart';
 
 import '../in_progress/in_progress_card.dart';
@@ -19,6 +22,7 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Get2 get2 = Get.put(Get2());
     return Scaffold(
         body: Container(
           decoration: const BoxDecoration(
@@ -91,23 +95,29 @@ class HomeScreen extends StatelessWidget {
                                 children: [
                                   Text(
                                     title3,
-                                    style: TextStyle(color: Colors.white,fontFamily: "Manrope"),
+                                    style: const TextStyle(color: Colors.white,fontFamily: "Manrope"),
                                   ),
                                   // Expanded(child: Container()),
-                                  Container(
-                                    margin: const EdgeInsets.only(top: 35),
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 15, vertical: 10),
-                                    decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        borderRadius: BorderRadius.circular(12)),
-                                    child: const Text(
-                                      "View Task",
-                                      style: TextStyle(
-                                        fontFamily: "Manrope",
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 18,
-                                          color: Color(0xff5f33e1)),
+                                  GestureDetector(
+                                    onTap: (){
+                                      get2.dateTask(DateTime.now());
+                                      Get.to(const ViewTasks());
+                                    },
+                                    child: Container(
+                                      margin: const EdgeInsets.only(top: 35),
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 15, vertical: 10),
+                                      decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          borderRadius: BorderRadius.circular(12)),
+                                      child: const Text(
+                                        "View Task",
+                                        style: TextStyle(
+                                          fontFamily: "Manrope",
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 18,
+                                            color: Color(0xff5f33e1)),
+                                      ),
                                     ),
                                   )
                                 ],

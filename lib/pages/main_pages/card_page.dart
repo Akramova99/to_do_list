@@ -1,24 +1,16 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:to_do_list/model/add_task_model.dart';
-import 'package:to_do_list/service/save_add_project.dart';
 
 class CardScreen extends StatelessWidget {
-  CardScreen({super.key});
-
-  void getInfo() {
-    SaveAddProject.getProject(objKey: "addProject");
-  }
-
-  final Tasks tasks = SaveAddProject.getProject(objKey: "addProject");
+  const CardScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.blue,
-        title: Text(tasks.taskGroup!),
+        title: Text("tasks.taskGroup!"),
         actions: [
           IconButton(
               onPressed: () {},
@@ -47,7 +39,6 @@ class CardScreen extends StatelessWidget {
                 ),
               ),
             ),
-
           ],
         ),
       ),
