@@ -9,10 +9,9 @@ import 'model/add_task_model.dart';
 
 Future<void> main() async {
 
+  WidgetsFlutterBinding.ensureInitialized();  // This should be the first line in main()
   await Hive.initFlutter();
-  Hive.registerAdapter(TasksAdapter());
-  await Hive.openBox<Tasks>("Tasks");
-  WidgetsFlutterBinding.ensureInitialized();
+  await Hive.openBox("Tasks");         // Open your Hive box
 
   runApp(const MyApp());
 }

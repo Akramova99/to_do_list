@@ -8,6 +8,8 @@ String title6 = "Gold the impossible collection";
 String title7 = "Constant health check, dentist";
 String title8 = "Asador Etxebarri dining at the restaurant";
 String title9 = "Journey with the family on White Wing mountain";
+String title11 = "Enter your plans for today";
+String title12 = "You can change the task details";
 String title10 =
     '''This application is designed for super shops. Buy using this application they can enlist all their products in one place and can deliver. Customers will get a one-stop solution for their daily shopping.   ''';
 List<String> items = [
@@ -16,6 +18,6 @@ List<String> items = [
     'Item3',
     'Item4',
 ];
-List<String> list1 = ["All", "To do", "In Progress", "Done","Plan"];
+List<String> list1 = ["All", "To do", "Done"];
 String taskType = "All";
 
