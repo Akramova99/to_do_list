@@ -103,6 +103,10 @@ flutter:
      - family: Teachers
        fonts:
          - asset: fonts/Teachers.ttf
+     - family: Inter
+       fonts:
+         - asset: fonts/Inter.ttf
+
   #   - family: Trajan Pro
   #     fonts:
   #       - asset: fonts/TrajanPro.ttf

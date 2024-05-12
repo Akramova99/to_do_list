@@ -1,41 +1,40 @@
+import 'dart:convert';
+
+import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:logger/logger.dart';
+import 'package:to_do_list/model/add_task_model.dart';
 
 import 'flutter_toast.dart';
 
-class HiveService {
-  Future<Box<List>> box() {
-    var box = Hive.openBox<List>("KeyTasks");
-    return box;
+class HiveService extends GetxController {
+  var objBox = Hive.box('Tasks');
+  var tasksList = <Tasks>[].obs;
+
+  ///Hive yordamida obj saqlash :date time now orqali key berish
+  storedObj({required var obj, required String objKey}) {
+    String stringUserObj = jsonEncode(obj);
+    objBox.put(objKey, stringUserObj);
+    Logger().i("user info saved successfully");
+    return showToast("Tasks saved successfully");
   }
 
-  // key = dd/MM/yyyy
-  //Add
-  void storeTasks(List newList, var id) async {
-    var myBox = await box();
-    myBox.put(id, newList);
-  }
+  ///Hamma Tasks objni olish funksiyasi
+  List<Tasks> getObj() {
+    tasksList.clear();
+    for (var key in objBox.keys) {
+      String stringObj = objBox.get(key);
 
-//Get
-  Future<List> getTasks(var id) async {
-    var myBox = await box();
-    List list = [];
-    for (var taskKey in myBox.keys) {
-      String key = taskKey.toString().substring(0, 10);
-      Logger().e(key);
-
-      if (key == id) {
-        list.addAll(myBox.get(taskKey)??[]);
-      }
+      Map<String, dynamic> map = jsonDecode(stringObj);
+      Tasks task = Tasks.fromJson(map);
+      tasksList.add(task);
     }
-    return list;
-  }
-   deleteProject() async {
-    var myBox = await box();
 
-    for (var objKey in myBox.keys) {
-      myBox.delete(objKey);
-    }
+    return tasksList;
+  }
+
+  deleteObj({required String objKey}) {
+    objBox.delete(objKey);
     return showToast("deleted successfully");
   }
 }

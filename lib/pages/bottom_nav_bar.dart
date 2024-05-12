@@ -1,7 +1,9 @@
 import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:iconly/iconly.dart';
+import 'package:to_do_list/service/hive_database.dart';
 
 import 'main_pages/add_project.dart';
 import 'main_pages/card_page.dart';
@@ -20,12 +22,13 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  HiveService hiveService = Get.put(HiveService());
   int selectedPage = 0;
 
   final List<dynamic> _pageOptions = [
      HomeScreen(),
     const TaskScreen(),
-    CardScreen(),
+    const CardScreen(),
      ProfileScreen(),
 
   ];
@@ -49,8 +52,8 @@ class _HomePageState extends State<HomePage> {
         tag: 'addButton', // Unique tag for the Hero animation
         child: FloatingActionButton(
           heroTag: null,
-          backgroundColor: Color(0xff5f33e1),
-          shape: CircleBorder(),
+          backgroundColor: const Color(0xff5f33e1),
+          shape: const CircleBorder(),
           onPressed: () {
             Navigator.pushReplacementNamed(context, AddProject.id);
           },
@@ -76,6 +79,9 @@ class _HomePageState extends State<HomePage> {
           setState(() {
             selectedPage = index;
           });
+          if(index==1){
+            hiveService.getObj();
+          }
         },        //other params
       ),    );
   }

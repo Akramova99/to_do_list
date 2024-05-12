@@ -3,11 +3,12 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconly/iconly.dart';
-import 'package:to_do_list/controller/get2.dart';
 import 'package:to_do_list/pages/bottom_nav_bar.dart';
 import 'package:to_do_list/pages/main_pages/only_task.dart';
 
-import '../all_task_view/all_task_view.dart';
+import '../../controller/get2.dart';
+import '../widgets/all_task_view.dart';
+
 
 class ViewTasks extends StatelessWidget {
   const ViewTasks({super.key});

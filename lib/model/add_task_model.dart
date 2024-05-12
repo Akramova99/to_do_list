@@ -1,38 +1,37 @@
 import 'package:hive/hive.dart';
 
-part 'add_task_model.g.dart';
 
 @HiveType(typeId: 0)
 class Tasks {
-  @HiveField(0)
   String? taskGroup;
-  @HiveField(1)
   String? projectName;
-  @HiveField(2)
   String? description;
-  @HiveField(3)
   String? startDate;
-  @HiveField(4)
   String? endTime;
+  String? stateOfTask;
 
   Tasks(
       {required this.taskGroup,
       required this.projectName,
       required this.description,
       required this.endTime,
-      required this.startDate});
+      required this.startDate,
+      required this.stateOfTask});
 
   Tasks.fromJson(Map<String, dynamic> mp)
       : taskGroup = mp["taskGroup"],
         projectName = mp["projectName"],
         description = mp["description"],
         endTime = mp["endTime"],
-        startDate = mp["startDate"];
+        startDate = mp["startDate"],
+        stateOfTask = mp["stateOfTask"];
 
   Map<String, dynamic> toJson() => {
         "taskGroup": taskGroup,
         "projectName": projectName,
         "description": description,
-        "endTime": endTime
+        "startDate": startDate,
+        "endTime": endTime,
+        "stateOfTask": stateOfTask
       };
 }

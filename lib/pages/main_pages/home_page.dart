@@ -22,7 +22,7 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Get2 get2 = Get.put(Get2());
+  //  Get2 get2 = Get.put(Get2());
     return Scaffold(
         body: Container(
           decoration: const BoxDecoration(
@@ -100,7 +100,7 @@ class HomeScreen extends StatelessWidget {
                                   // Expanded(child: Container()),
                                   GestureDetector(
                                     onTap: (){
-                                      get2.dateTask(DateTime.now());
+                                   //   get2.dateTask(DateTime.now());
                                       Get.to(const ViewTasks());
                                     },
                                     child: Container(

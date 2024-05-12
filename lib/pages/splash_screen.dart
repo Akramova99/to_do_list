@@ -96,7 +96,10 @@ class _SplashScreenState extends State<SplashScreen>
                         style: TextStyle(color: Colors.white),
                       ),
                       Expanded(child: Container()),
-                      const Icon(IconlyBold.arrow_right, color: Colors.white),
+                      const Padding(
+                        padding: EdgeInsets.only(right: 8.0),
+                        child: Icon(IconlyBold.arrow_right, color: Colors.white),
+                      ),
                     ],
                   ),
                 ),

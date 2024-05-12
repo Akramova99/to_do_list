@@ -4,12 +4,13 @@ import 'package:easy_date_timeline/easy_date_timeline.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconly/iconly.dart';
+import 'package:to_do_list/controller/time_picker_controller.dart';
 import 'package:to_do_list/pages/bottom_nav_bar.dart';
+import 'package:to_do_list/pages/main_pages/on_tap_task.dart';
 import 'package:to_do_list/service/hive_database.dart';
 import 'package:to_do_list/string_text.dart';
 
-import '../../controller/get2.dart';
-import '../all_task_view/all_task_view.dart';
+import '../widgets/all_task_view.dart';
 
 class TaskScreen extends StatefulWidget {
   const TaskScreen({super.key});
@@ -20,9 +21,17 @@ class TaskScreen extends StatefulWidget {
 
 class _TaskScreenState extends State<TaskScreen> with TickerProviderStateMixin {
   final PageController _pageController = PageController();
-  Get2 get2 = Get.put(Get2());
+  HiveService get2 = Get.put(HiveService());
   int selectedTabIndex = 0;
-  HiveService hiveService =HiveService();
+  DateTimePicker dateTimePicker =Get.put(DateTimePicker());
+  // void dateOldView() {
+  //
+  //  setState(() {
+  //    dateTimePicker.selectedEndDate.value =
+  //        DateTime.now();
+  //    dateTimePicker.selectedDate.value = DateTime.now();
+  //  });
+  // }
 
   // GetTasks tasks = Get.put(GetTasks());
   // ShowIcons showList = Get.put(ShowIcons());
@@ -40,13 +49,16 @@ class _TaskScreenState extends State<TaskScreen> with TickerProviderStateMixin {
   void initState() {
     // TODO: implement initState
     super.initState();
+   // get2.getObj();
+     // dateOldView();
+
     //  toWork();
   }
 
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 5,
+      length: 3,
       child: Scaffold(
           appBar: AppBar(
             leading: IconButton(
@@ -66,9 +78,7 @@ class _TaskScreenState extends State<TaskScreen> with TickerProviderStateMixin {
             centerTitle: true,
             actions: [
               IconButton(
-                  onPressed: () {
-                    hiveService.deleteProject();
-                  },
+                  onPressed: () {},
                   icon: const Badge(child: Icon(IconlyBold.notification)))
             ],
           ),
@@ -96,7 +106,11 @@ class _TaskScreenState extends State<TaskScreen> with TickerProviderStateMixin {
                     EasyDateTimeLine(
                       initialDate: DateTime.now(),
                       onDateChange: (selectedDate) {
-                        get2.dateTask(selectedDate);
+                        // selectedFromCalendar.changeSelectedDate(selectedDate);
+                        // String day = selectedFromCalendar.mySelectedDate.toString().substring(0,10);
+                       // String day = selectedDate.toString().substring(0, 10);
+                        //get2.getSavedTasks(day);
+                        //  get2.dateTask(selectedDate);
                         // taskManagement.changeSelectedDate(selectedDate);
 
                         //`selectedDate` the new date selected.
@@ -123,13 +137,13 @@ class _TaskScreenState extends State<TaskScreen> with TickerProviderStateMixin {
                     ),
                     TabBar(
                       isScrollable: true,
-                      tabAlignment: TabAlignment.start,
+                      tabAlignment: TabAlignment.center,
                       padding: const EdgeInsets.only(left: 15, right: 10),
                       indicatorColor: Colors.transparent,
                       dividerColor: Colors.transparent,
                       labelPadding: const EdgeInsets.only(
-                        left: 0,
-                        right: 7,
+                        left: 10,
+                        right: 20,
                       ),
                       onTap: (index) {
                         _pageController.animateToPage(
@@ -147,14 +161,9 @@ class _TaskScreenState extends State<TaskScreen> with TickerProviderStateMixin {
                           height: 90,
                           child: category("To do"),
                         ),
-                        Tab(height: 90, child: category("In Progress")),
                         Tab(
                           height: 90,
                           child: category("Done"),
-                        ),
-                        Tab(
-                          height: 90,
-                          child: category("Plan"),
                         ),
                       ],
                     ),
@@ -169,9 +178,15 @@ class _TaskScreenState extends State<TaskScreen> with TickerProviderStateMixin {
                         children: [
                           Obx(
                             () => ListView.builder(
-                                itemCount: get2.projects.length,
+                                itemCount: get2.tasksList.length,
                                 itemBuilder: (context, index) {
-                                  return allTaskView(get2.projects[index]);
+                                  return GestureDetector(
+                                    onTap: () {
+                                      Get.to(OnTapTask(
+                                          tasks: get2.tasksList[index]));
+                                    },
+                                    child: allTaskView(get2.tasksList[index]),
+                                  );
                                 }),
                           ),
                           Container(
@@ -186,13 +201,7 @@ class _TaskScreenState extends State<TaskScreen> with TickerProviderStateMixin {
                           //       }),
                           // ),
                           Container(
-                            color: Colors.yellow,
-                          ),
-                          Container(
-                            color: Colors.blue,
-                          ),
-                          Container(
-                            color: Colors.grey,
+                            color: Colors.green,
                           ),
                         ],
                       ),

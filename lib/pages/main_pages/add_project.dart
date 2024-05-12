@@ -6,32 +6,78 @@ import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:iconly/iconly.dart';
 import 'package:intl/intl.dart';
-import 'package:to_do_list/controller/get2.dart';
 import 'package:to_do_list/controller/saveProject.dart';
 import 'package:to_do_list/pages/bottom_nav_bar.dart';
 import 'package:to_do_list/service/flutter_toast.dart';
+import 'package:to_do_list/service/hive_database.dart';
 
 import '../../controller/menu_controller.dart';
 import '../../controller/time_picker_controller.dart';
 
-class AddProject extends StatelessWidget {
+class AddProject extends StatefulWidget {
   static const String id = "add_project";
 
   AddProject({super.key});
 
+  @override
+  State<AddProject> createState() => _AddProjectState();
+}
+
+class _AddProjectState extends State<AddProject> {
   final TextEditingController nameProjectCont = TextEditingController();
+
   final TextEditingController descriptionCont = TextEditingController();
+
   final ExpansionTileMenu expansionTile = Get.put(ExpansionTileMenu());
+
   final GlobalKey popupMenuButtonKey = GlobalKey();
 
+  DateTimePicker dateTimePicker = Get.put(DateTimePicker());
+
+  SaveProject saveProject = Get.put(SaveProject());
+
+  HiveService hiveService = Get.put(HiveService());
+
   final String item1 = "Profile";
+
   final String item2 = "Daily Study";
+
   final String item3 = "Work";
+
+  void taskOldView() {
+    dateTimePicker.selectedEndDate.value = DateTime.now();
+    dateTimePicker.selectedDate.value = DateTime.now();
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      taskOldView();
+    });
+  }
+
+  // void saveData()async{
+  //   String key =  dateTimePicker.selectedDate.value.toString().substring(0,10);
+  //   List<Tasks> lst = [];
+  //   if (await hiveService.getTasks(key) == null) {
+  //     saveProject.addProject(nameProjectCont.text.trim(), descriptionCont.text.trim());
+  //      hiveService.storeTasks(saveProject.listTask, key);
+  //     Future.delayed(Duration.zero);
+  //   } else {
+  //     for (Tasks item in await hiveService.getTasks(key)) {
+  //       lst.add(item);
+  //     }
+  //     saveProject.addProject(nameProjectCont.text.trim(), descriptionCont.text.trim());
+  //     lst.add(saveProject.listTask.first);
+  //     showToast("Stored Successfully");
+  //     hiveService.storeTasks(lst, key);
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
-    DateTimePicker dateTimePicker = Get.put(DateTimePicker());
-    Get2 get2 = Get.put(Get2());
     ExpansionTileMenu menu = Get.put(ExpansionTileMenu());
     SaveProject saveProject = Get.put(SaveProject());
 
@@ -479,9 +525,10 @@ class AddProject extends StatelessWidget {
       ),
       bottomNavigationBar: GestureDetector(
         onTap: () {
-          saveProject.storeProject(
+          saveProject.addProject(
               nameProjectCont.text.trim(), descriptionCont.text.trim());
-          get2.dateTask(DateTime.now());
+          hiveService.getObj();
+          //   get2.getSavedTasks(selectedFromCalendar.mySelectedDate.toString().substring(0,10));
           nameProjectCont.clear();
           descriptionCont.clear();
           dateTimePicker.makeInitial();
