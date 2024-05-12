@@ -12,6 +12,7 @@ import 'package:to_do_list/service/flutter_toast.dart';
 import 'package:to_do_list/service/hive_database.dart';
 
 import '../../controller/menu_controller.dart';
+import '../../controller/percent_of_tasks.dart';
 import '../../controller/time_picker_controller.dart';
 
 class AddProject extends StatefulWidget {
@@ -523,15 +524,21 @@ class _AddProjectState extends State<AddProject> {
           ],
         ),
       ),
-      bottomNavigationBar: GestureDetector(
+      bottomNavigationBar: InkWell(
+        splashColor: Colors.blue.shade100,
+        borderRadius: BorderRadius.circular(20.0),
         onTap: () {
-          saveProject.addProject(
-              nameProjectCont.text.trim(), descriptionCont.text.trim());
+          saveProject.addProject(nameProjectCont.text.trim(),
+              descriptionCont.text.trim(), DateTime.now().toString(), false);
           hiveService.getObj();
-          //   get2.getSavedTasks(selectedFromCalendar.mySelectedDate.toString().substring(0,10));
           nameProjectCont.clear();
           descriptionCont.clear();
           dateTimePicker.makeInitial();
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            hiveService.getTasksForSelectedDate(DateTime.now());
+            Percent
+                .updatePercentView(); // Ensure percentView is updated when the home page is opened
+          });
         },
         child: Container(
           margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),

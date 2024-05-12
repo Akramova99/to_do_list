@@ -2,11 +2,14 @@ import 'dart:ui';
 
 import 'package:easy_date_timeline/easy_date_timeline.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:iconly/iconly.dart';
+import 'package:logger/logger.dart';
+import 'package:to_do_list/controller/check_switch.dart';
 import 'package:to_do_list/controller/time_picker_controller.dart';
 import 'package:to_do_list/pages/bottom_nav_bar.dart';
-import 'package:to_do_list/pages/main_pages/on_tap_task.dart';
+import 'package:to_do_list/pages/main_pages/task_details.dart';
 import 'package:to_do_list/service/hive_database.dart';
 import 'package:to_do_list/string_text.dart';
 
@@ -23,7 +26,9 @@ class _TaskScreenState extends State<TaskScreen> with TickerProviderStateMixin {
   final PageController _pageController = PageController();
   HiveService get2 = Get.put(HiveService());
   int selectedTabIndex = 0;
-  DateTimePicker dateTimePicker =Get.put(DateTimePicker());
+  DateTimePicker dateTimePicker = Get.put(DateTimePicker());
+  IsSwitched mySelectedDate = Get.put(IsSwitched());
+
   // void dateOldView() {
   //
   //  setState(() {
@@ -49,8 +54,8 @@ class _TaskScreenState extends State<TaskScreen> with TickerProviderStateMixin {
   void initState() {
     // TODO: implement initState
     super.initState();
-   // get2.getObj();
-     // dateOldView();
+    // get2.getObj();
+    // dateOldView();
 
     //  toWork();
   }
@@ -106,14 +111,8 @@ class _TaskScreenState extends State<TaskScreen> with TickerProviderStateMixin {
                     EasyDateTimeLine(
                       initialDate: DateTime.now(),
                       onDateChange: (selectedDate) {
-                        // selectedFromCalendar.changeSelectedDate(selectedDate);
-                        // String day = selectedFromCalendar.mySelectedDate.toString().substring(0,10);
-                       // String day = selectedDate.toString().substring(0, 10);
-                        //get2.getSavedTasks(day);
-                        //  get2.dateTask(selectedDate);
-                        // taskManagement.changeSelectedDate(selectedDate);
-
-                        //`selectedDate` the new date selected.
+                        //mySelectedDate.changeSelectedDate(selectedDate);
+                        get2.getTasksForSelectedDate(selectedDate);
                       },
                       headerProps: const EasyHeaderProps(
                         monthPickerType: MonthPickerType.switcher,
@@ -149,7 +148,7 @@ class _TaskScreenState extends State<TaskScreen> with TickerProviderStateMixin {
                         _pageController.animateToPage(
                           index,
                           duration: const Duration(milliseconds: 300),
-                          curve: Curves.ease,
+                          curve: Curves.easeIn,
                         );
                       },
                       tabs: [
@@ -174,35 +173,51 @@ class _TaskScreenState extends State<TaskScreen> with TickerProviderStateMixin {
                           setState(() {
                             selectedTabIndex = index;
                           });
+                          Logger().i(get2.tasksList.length);
                         },
                         children: [
-                          Obx(
-                            () => ListView.builder(
-                                itemCount: get2.tasksList.length,
-                                itemBuilder: (context, index) {
-                                  return GestureDetector(
-                                    onTap: () {
-                                      Get.to(OnTapTask(
-                                          tasks: get2.tasksList[index]));
-                                    },
-                                    child: allTaskView(get2.tasksList[index]),
-                                  );
-                                }),
-                          ),
-                          Container(
-                            color: Colors.yellow,
-                          ),
-                          // Obx(
-                          //   () => ListView.builder(
-                          //       itemCount: taskManagement.showList.length,
-                          //       itemBuilder: (context, index) {
-                          //         return allTaskView(
-                          //             taskManagement.showList[index]);
-                          //       }),
-                          // ),
-                          Container(
-                            color: Colors.green,
-                          ),
+                          if (get2.tasksList.isNotEmpty)
+                            Obx(
+                              () => ListView.builder(
+                                  itemCount: get2.tasksList.length,
+                                  itemBuilder: (context, index) {
+                                    return GestureDetector(
+                                      onTap: () {
+                                        mySelectedDate.changeSwitch(get2.tasksList[index].stateOfTask=="To do"? false:true);
+                                        Get.to(
+                                            OnTapTask(
+                                            tasks: get2.tasksList[index]));
+                                      },
+                                      child: allTaskView(get2.tasksList[index]),
+                                    );
+                                  }),
+                            )??emptySvg(),
+                        //  if (get2.tasksList.isEmpty) emptySvg(),
+
+                          Obx(() => ListView.builder(
+                            itemCount: get2.toDoTasks.length,
+                            itemBuilder: (context, index) {
+                              return GestureDetector(
+                                onTap: () {
+                                  mySelectedDate.changeSwitch(false);
+                                  Get.to(OnTapTask(tasks: get2.toDoTasks[index]));
+                                },
+                                child: allTaskView(get2.toDoTasks[index]),
+                              );
+                            },
+                          )),
+                          Obx(() => ListView.builder(
+                            itemCount: get2.doneTasks.length,
+                            itemBuilder: (context, index) {
+                              return GestureDetector(
+                                onTap: () {
+                                  mySelectedDate.changeSwitch(true);
+                                  Get.to(OnTapTask(tasks: get2.doneTasks[index]));
+                                },
+                                child: allTaskView(get2.doneTasks[index]),
+                              );
+                            },
+                          )),
                         ],
                       ),
                     ),
@@ -234,4 +249,28 @@ class _TaskScreenState extends State<TaskScreen> with TickerProviderStateMixin {
       ),
     );
   }
+
+  Widget emptySvg() {
+    return Column(
+      children: [
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 40),
+          child: SvgPicture.asset(
+            "assets/svg/empty.svg",
+            height: 200,
+            width: 200,
+          ),
+        ),
+        const Text("Data empty"),
+      ],
+    );
+  }
 }
+// selectedFromCalendar.changeSelectedDate(selectedDate);
+// String day = selectedFromCalendar.mySelectedDate.toString().substring(0,10);
+// String day = selectedDate.toString().substring(0, 10);
+//get2.getSavedTasks(day);
+//  get2.dateTask(selectedDate);
+// taskManagement.changeSelectedDate(selectedDate);
+
+//`selectedDate` the new date selected.

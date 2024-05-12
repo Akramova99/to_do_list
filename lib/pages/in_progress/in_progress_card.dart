@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:to_do_list/pages/in_progress/in_progress_class.dart';
-class InProgressCard extends StatelessWidget {
-  final InProgressClass ? card;
 
-   const InProgressCard({super.key,required this.card});
+class InProgressCard extends StatelessWidget {
+  final InProgressClass? card;
+
+  const InProgressCard({super.key, required this.card});
 
   @override
   Widget build(BuildContext context) {
-    return   Container(
+    return Container(
       width: 200,
-      margin: const EdgeInsets.only(left: 20, top: 10, bottom: 20),
+           margin: const EdgeInsets.only(left: 20, top: 10, bottom: 20),
       padding: const EdgeInsets.only(left: 20),
       decoration: BoxDecoration(
-          color: card!.colorCard,
-          borderRadius: BorderRadius.circular(20)),
+          color: card!.colorCard, borderRadius: BorderRadius.circular(20)),
       child: Column(
         children: [
           Row(
@@ -23,7 +23,7 @@ class InProgressCard extends StatelessWidget {
               Text(
                 card!.typeTask!,
                 style: TextStyle(
-                  fontFamily: "Manrope",
+                    fontFamily: "Manrope",
                     fontWeight: FontWeight.w400,
                     fontSize: 14,
                     color: Colors.grey.shade500),
@@ -54,29 +54,30 @@ class InProgressCard extends StatelessWidget {
                   maxLines: 2,
                   card!.taskName.toString(),
                   style: const TextStyle(
-fontFamily: "Manrope",
-                      fontWeight: FontWeight.bold, fontSize: 16),
+                      fontFamily: "Manrope",
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16),
                 ),
               ),
             ],
           ),
-          Row(
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(bottom: 12.0, top: 10),
-                child: LinearPercentIndicator(
-                  padding: EdgeInsets.zero,
-                  width: 160.0,
-                  animation: true,
-                  lineHeight: 8.0,
-                  percent: card!.percentTask!/100,
-                  barRadius: const Radius.circular(5),
-                  backgroundColor: Colors.white,
-                  progressColor: Colors.blue,
-                ),
-              ),
-            ],
-          ),
+          // Row(
+          //   children: [
+          //     Padding(
+          //       padding: const EdgeInsets.only(bottom: 12.0, top: 10),
+          //       child: LinearPercentIndicator(
+          //         padding: EdgeInsets.zero,
+          //         width: 160.0,
+          //         animation: true,
+          //         lineHeight: 8.0,
+          //         percent: card!.percentTask! / 100,
+          //         barRadius: const Radius.circular(5),
+          //         backgroundColor: Colors.white,
+          //         progressColor: Colors.blue,
+          //       ),
+          //     ),
+          //   ],
+          // ),
         ],
       ),
     );

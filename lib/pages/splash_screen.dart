@@ -1,9 +1,14 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:iconly/iconly.dart';
+import 'package:to_do_list/controller/pick_and_load_image.dart';
 import 'package:to_do_list/pages/bottom_nav_bar.dart';
 import 'package:to_do_list/string_text.dart';
+
+import '../controller/percent_of_tasks.dart';
+import '../service/hive_database.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -14,6 +19,22 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen>
     with SingleTickerProviderStateMixin {
+  HiveService get2 = Get.put(HiveService());
+  ImageController imageController = Get.put(ImageController());
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    get2.getTasksForSelectedDate(DateTime.now());
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Percent
+          .updatePercentView(); // Ensure percentView is updated when the home page is opened
+      imageController.loadImage();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -70,7 +91,9 @@ class _SplashScreenState extends State<SplashScreen>
                 width: double.infinity,
                 height: 30.0,
               ),
-              GestureDetector(
+              InkWell(
+                splashColor: Colors.blue.shade200,
+                borderRadius: BorderRadius.circular(20.0),
                 onTap: () {
                   Navigator.pushReplacementNamed(context, HomePage.id);
                 },
@@ -98,7 +121,8 @@ class _SplashScreenState extends State<SplashScreen>
                       Expanded(child: Container()),
                       const Padding(
                         padding: EdgeInsets.only(right: 8.0),
-                        child: Icon(IconlyBold.arrow_right, color: Colors.white),
+                        child:
+                            Icon(IconlyBold.arrow_right, color: Colors.white),
                       ),
                     ],
                   ),
