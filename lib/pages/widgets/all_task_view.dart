@@ -7,6 +7,7 @@ import '../../model/add_task_model.dart';
 
 Widget allTaskView(Tasks task) {
   bool check = task.projectName == null;
+
   Widget emptySvg() {
     return Column(
       children: [
@@ -22,7 +23,6 @@ Widget allTaskView(Tasks task) {
       ],
     );
   }
-
 
   return !check
       ? Container(
@@ -74,36 +74,60 @@ Widget allTaskView(Tasks task) {
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
-              Row(
-                children: [
-                  Icon(
-                    Icons.access_time_filled_rounded,
-                    color: Colors.indigoAccent.shade200,
-                    size: 20,
-                  ),
-                  const SizedBox(
-                    width: 4,
-                  ),
-                  Text(
-                    "10:00 AM",
-                    style: TextStyle(
-                        fontSize: 13, color: Colors.indigoAccent.shade200),
-                  ),
-                  Expanded(child: Container()),
-                  Container(
-                    margin: const EdgeInsets.only(left: 4, top: 4, right: 4),
-                    padding: const EdgeInsets.all(4),
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        color: const Color(0xff5f33e1).withOpacity(0.1)),
-                    child: Text(
-                      "done",
+              if (task.stateOfTask != "To do")
+                Row(
+                  children: [
+                    Text(
+                      "Completed the task",
                       style: TextStyle(
-                          fontSize: 12, color: Colors.indigoAccent.shade200),
+                          fontSize: 13, color: Colors.indigoAccent.shade200),
                     ),
-                  )
-                ],
-              ),
+                    Expanded(child: Container()),
+                    Container(
+                      margin: const EdgeInsets.only(left: 4, top: 4, right: 4),
+                      padding: const EdgeInsets.all(4),
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          color: const Color(0xff5f33e1).withOpacity(0.1)),
+                      child: Text(
+                        task.stateOfTask!,
+                        style: TextStyle(
+                            fontSize: 12, color: Colors.indigoAccent.shade200),
+                      ),
+                    )
+                  ],
+                ),
+              if (task.stateOfTask == "To do")
+                Row(
+                  children: [
+                    Icon(
+                      Icons.access_time_filled_rounded,
+                      color: Colors.indigoAccent.shade200,
+                      size: 20,
+                    ),
+                    const SizedBox(
+                      width: 4,
+                    ),
+                    Text(
+                      "Complete the task",
+                      style: TextStyle(
+                          fontSize: 13, color: Colors.indigoAccent.shade200),
+                    ),
+                    Expanded(child: Container()),
+                    Container(
+                      margin: const EdgeInsets.only(left: 4, top: 4, right: 4),
+                      padding: const EdgeInsets.all(4),
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          color: const Color(0xff5f33e1).withOpacity(0.1)),
+                      child: Text(
+                        task.stateOfTask!,
+                        style: TextStyle(
+                            fontSize: 12, color: Colors.indigoAccent.shade200),
+                      ),
+                    )
+                  ],
+                )
             ],
           ),
         )

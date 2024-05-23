@@ -1,6 +1,3 @@
-import 'package:hive/hive.dart';
-
-@HiveType(typeId: 0)
 class Tasks {
   String? taskGroup;
   String? projectName;
@@ -9,6 +6,7 @@ class Tasks {
   String? endTime;
   String? stateOfTask;
   String? key;
+  bool star;
 
   Tasks(
       {required this.taskGroup,
@@ -17,7 +15,8 @@ class Tasks {
       required this.endTime,
       required this.startDate,
       required this.stateOfTask,
-      required this.key});
+      required this.key,
+     required this.star });
 
   Tasks.fromJson(Map<String, dynamic> mp)
       : taskGroup = mp["taskGroup"],
@@ -26,7 +25,8 @@ class Tasks {
         endTime = mp["endTime"],
         startDate = mp["startDate"],
         stateOfTask = mp["stateOfTask"],
-        key = mp["key"];
+        key = mp["key"],
+        star = mp["star"];
 
   Map<String, dynamic> toJson() => {
         "taskGroup": taskGroup,
@@ -35,6 +35,7 @@ class Tasks {
         "startDate": startDate,
         "endTime": endTime,
         "stateOfTask": stateOfTask,
-        "key": key
+        "key": key,
+        "star": star
       };
 }

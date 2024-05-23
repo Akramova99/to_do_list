@@ -6,14 +6,15 @@ import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:iconly/iconly.dart';
 import 'package:intl/intl.dart';
+import 'package:to_do_list/controller/check_switch.dart';
+import 'package:to_do_list/controller/is_badge_visible.dart';
 import 'package:to_do_list/controller/saveProject.dart';
-import 'package:to_do_list/pages/bottom_nav_bar.dart';
 import 'package:to_do_list/service/flutter_toast.dart';
 import 'package:to_do_list/service/hive_database.dart';
 
 import '../../controller/menu_controller.dart';
-import '../../controller/percent_of_tasks.dart';
 import '../../controller/time_picker_controller.dart';
+import 'notification_page.dart';
 
 class AddProject extends StatefulWidget {
   static const String id = "add_project";
@@ -38,6 +39,7 @@ class _AddProjectState extends State<AddProject> {
   SaveProject saveProject = Get.put(SaveProject());
 
   HiveService hiveService = Get.put(HiveService());
+  IsBadgeVisible visible = Get.put(IsBadgeVisible());
 
   final String item1 = "Profile";
 
@@ -59,28 +61,11 @@ class _AddProjectState extends State<AddProject> {
     });
   }
 
-  // void saveData()async{
-  //   String key =  dateTimePicker.selectedDate.value.toString().substring(0,10);
-  //   List<Tasks> lst = [];
-  //   if (await hiveService.getTasks(key) == null) {
-  //     saveProject.addProject(nameProjectCont.text.trim(), descriptionCont.text.trim());
-  //      hiveService.storeTasks(saveProject.listTask, key);
-  //     Future.delayed(Duration.zero);
-  //   } else {
-  //     for (Tasks item in await hiveService.getTasks(key)) {
-  //       lst.add(item);
-  //     }
-  //     saveProject.addProject(nameProjectCont.text.trim(), descriptionCont.text.trim());
-  //     lst.add(saveProject.listTask.first);
-  //     showToast("Stored Successfully");
-  //     hiveService.storeTasks(lst, key);
-  //   }
-  // }
-
   @override
   Widget build(BuildContext context) {
     ExpansionTileMenu menu = Get.put(ExpansionTileMenu());
     SaveProject saveProject = Get.put(SaveProject());
+    IsSwitched isSwitched = Get.put(IsSwitched());
 
     void startDate({required DateTime date}) async {
       if (GetPlatform.isAndroid) {
@@ -148,7 +133,7 @@ class _AddProjectState extends State<AddProject> {
       appBar: AppBar(
         leading: IconButton(
           onPressed: () {
-            Navigator.pushReplacementNamed(context, HomePage.id);
+            Get.back();
           },
           icon: const Icon(IconlyBold.arrow_left),
         ),
@@ -162,8 +147,14 @@ class _AddProjectState extends State<AddProject> {
         centerTitle: true,
         actions: [
           IconButton(
-              onPressed: () {},
-              icon: const Badge(child: Icon(IconlyBold.notification)))
+              onPressed: () {
+                Get.to(const Notifications());
+                visible.changeBadge(false);
+              },
+              icon: Obx(() => Badge(
+                  isLabelVisible: hiveService.tasksList.isNotEmpty &&
+                      visible.isVisible.value,
+                  child: const Icon(IconlyBold.notification)))),
         ],
       ),
       body: Container(
@@ -528,16 +519,17 @@ class _AddProjectState extends State<AddProject> {
         splashColor: Colors.blue.shade100,
         borderRadius: BorderRadius.circular(20.0),
         onTap: () {
+          isSwitched.changeSwitch(false);
+
           saveProject.addProject(nameProjectCont.text.trim(),
-              descriptionCont.text.trim(), DateTime.now().toString(), false);
+              descriptionCont.text.trim(), DateTime.now().toString());
           hiveService.getObj();
           nameProjectCont.clear();
           descriptionCont.clear();
           dateTimePicker.makeInitial();
           WidgetsBinding.instance.addPostFrameCallback((_) {
             hiveService.getTasksForSelectedDate(DateTime.now());
-            Percent
-                .updatePercentView(); // Ensure percentView is updated when the home page is opened
+            hiveService.toDoTasks;
           });
         },
         child: Container(

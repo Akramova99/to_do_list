@@ -2,38 +2,50 @@ import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:iconly/iconly.dart';
-import 'package:logger/logger.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
+import 'package:to_do_list/controller/is_badge_visible.dart';
 import 'package:to_do_list/controller/percent_of_tasks.dart';
 import 'package:to_do_list/controller/pick_and_load_image.dart';
+import 'package:to_do_list/pages/main_pages/notification_page.dart';
 import 'package:to_do_list/pages/main_pages/view_tasks.dart';
 import 'package:to_do_list/service/hive_database.dart';
 import 'package:to_do_list/string_text.dart';
 
 import '../in_progress/in_progress_card.dart';
-import '../in_progress/in_progress_class.dart';
 import '../task_group/task_group_card.dart';
 import '../task_group/task_group_class.dart';
 
-class HomeScreen extends StatelessWidget {
-  HomeScreen({super.key});
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
 
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
   HiveService get2 = Get.put(HiveService());
+  ImageController imageController = Get.put(ImageController());
+  Percent percent = Get.put(Percent());
+  IsBadgeVisible visible = Get.put(IsBadgeVisible());
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      get2.getTasksForSelectedDate(DateTime.now());
+      get2.toDoTasks;
+      imageController.loadImage();
+      percent.updatePercentView();
+      Get.find<Percent>().updatePercentView();
+      // Call updatePercentView() here
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    ImageController imageController = Get.put(ImageController());
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      get2.getTasksForSelectedDate(DateTime.now());
-      Percent
-          .updatePercentView(); // Ensure percentView is updated when the home page is opened
-      imageController.loadImage();
-    });
-
     return Scaffold(
         body: Container(
       decoration: const BoxDecoration(
@@ -67,22 +79,14 @@ class HomeScreen extends StatelessWidget {
                     Obx(() => CircleAvatar(
                           backgroundColor: Colors.white,
                           child: ClipOval(
-                            child: imageController.image != null
-                                ? Image.file(
-                                    imageController.image.value!,
-                                    width:
-                                        40, // The width should be double the radius
-                                    height:
-                                        40, // The height should be double the radius
-                                    fit: BoxFit.cover,
-                                  )
-                                : SvgPicture.asset(
-                                    "assets/svg/profile.svg",
-                                    width: 40,
-                                    height: 40,
-                                    fit: BoxFit.cover,
-                                  ),
-                          ),
+                              child: Image.file(
+                            imageController.image.value!,
+                            width: 40,
+                            // The width should be double the radius
+                            height: 40,
+                            // The height should be double the radius
+                            fit: BoxFit.cover,
+                          )),
                         )),
                     const SizedBox(
                       width: 20,
@@ -106,9 +110,13 @@ class HomeScreen extends StatelessWidget {
                     Expanded(child: Container()),
                     IconButton(
                         onPressed: () {
-                          Logger().i(Percent.check);
+                          Get.to(const Notifications());
+                          visible.changeBadge(false);
                         },
-                        icon: Badge(child: Icon(IconlyBold.notification))),
+                        icon: Obx(() => Badge(
+                            isLabelVisible: get2.tasksList.isNotEmpty &&
+                                visible.isVisible.value,
+                            child: Icon(IconlyBold.notification)))),
                     const SizedBox(
                       width: 10,
                     ),
@@ -129,36 +137,28 @@ class HomeScreen extends StatelessWidget {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              if (Percent.percentView.value > 50 &&
-                                  Percent.percentView.value < 100)
-                                Text(
-                                  title3,
+                              Obx(() {
+                                // Ensure percentView is up to date
+                                WidgetsBinding.instance
+                                    .addPostFrameCallback((_) {
+                                  Get.find<Percent>()
+                                      .updatePercentView(); // Call updatePercentView() here
+                                });
+
+                                return Text(
+                                  percent.percentView.value > 50.0 &&
+                                          percent.percentView.value < 100.0
+                                      ? title3
+                                      : (percent.percentView.value == 50.0
+                                          ? title14
+                                          : (percent.percentView.value == 100.0
+                                              ? title15
+                                              : title16)),
                                   style: const TextStyle(
                                       color: Colors.white,
                                       fontFamily: "Manrope"),
-                                ),
-                              if (Percent.percentView.value < 50)
-                                Text(
-                                  title16,
-                                  style: const TextStyle(
-                                      color: Colors.white,
-                                      fontFamily: "Manrope"),
-                                ),
-                              if (Percent.percentView.value == 50)
-                                Text(
-                                  title14,
-                                  style: const TextStyle(
-                                      color: Colors.white,
-                                      fontFamily: "Manrope"),
-                                ),
-                              if (Percent.percentView.value == 100)
-                                Text(
-                                  title15,
-                                  style: const TextStyle(
-                                      color: Colors.white,
-                                      fontFamily: "Manrope"),
-                                ),
-                              // Expanded(child: Container()),
+                                );
+                              }),
                               InkWell(
                                 splashColor: Colors.white,
                                 borderRadius: BorderRadius.circular(20.0),
@@ -190,24 +190,32 @@ class HomeScreen extends StatelessWidget {
                       CircleAvatar(
                         radius: 50,
                         backgroundColor: Colors.transparent,
-                        child: CircularPercentIndicator(
-                          // fillColor: Colors.red,
-                          startAngle: 120,
-                          radius: 45.0,
-                          lineWidth: 8.0,
-                          animation: true,
-                          percent: Percent.percentView / 100,
-                          center: Text(
-                            "${Percent.percentView.toStringAsFixed(1)}%",
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 15.0,
-                                color: Colors.white),
-                          ),
-                          backgroundColor: Color(0xff197CEE),
-                          circularStrokeCap: CircularStrokeCap.round,
-                          progressColor: Colors.white,
-                        ),
+                        child: Obx(() {
+                          WidgetsBinding.instance.addPostFrameCallback((_) {
+                            Get.find<Percent>()
+                                .updatePercentView(); // Call updatePercentView() here
+                          }); // Call updatePercentView() here
+
+                          return CircularPercentIndicator(
+                            // fillColor: Colors.red,
+                            startAngle: 120,
+                            radius: 45.0,
+                            lineWidth: 8.0,
+                            animation: true,
+                            //Percent.percentView / 100  [0;1]
+                            percent: percent.percentView / 100,
+                            center: Text(
+                              "${percent.percentView.toStringAsFixed(1)}%",
+                              style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 15.0,
+                                  color: Colors.white),
+                            ),
+                            backgroundColor: const Color(0xff197CEE),
+                            circularStrokeCap: CircularStrokeCap.round,
+                            progressColor: Colors.white,
+                          );
+                        }),
                       ),
                       GestureDetector(
                         onTap: () {},
@@ -228,11 +236,11 @@ class HomeScreen extends StatelessWidget {
                   ),
                 ),
                 Padding(
-                  padding: EdgeInsets.only(left: 20),
+                  padding: const EdgeInsets.only(left: 20),
                   child: Row(
                     children: [
                       const Text(
-                        "In Progress",
+                        "To do tasks",
                         style: TextStyle(
                             fontFamily: "PlexSans",
                             fontWeight: FontWeight.bold,
@@ -244,8 +252,8 @@ class HomeScreen extends StatelessWidget {
                       CircleAvatar(
                         radius: 10,
                         backgroundColor: Colors.blue.shade50,
-                        child: const Text(
-                          "6",
+                        child: Text(
+                          get2.toDoTasks.length.toString(),
                           style:
                               TextStyle(fontSize: 12, color: Color(0xff5f33e1)),
                         ),
@@ -253,21 +261,25 @@ class HomeScreen extends StatelessWidget {
                     ],
                   ),
                 ),
-                GestureDetector(
-                  onTap: () {},
-                  child: SizedBox(
-                    height: 165,
-                    child: ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: InProgressList.inProgressList.length,
-                        itemBuilder: (context, index) {
-                          return InProgressCard(
-                              card: InProgressList.inProgressList[index]);
-                        }),
-                  ),
-                ),
+                get2.toDoTasks.isEmpty
+                    ? SvgPicture.asset(
+                        "assets/svg/empty.svg",
+                        height: 150,
+                        width: 150,
+                      )
+                    : SizedBox(
+                        height: 170,
+                        child: Obx(() => ListView.builder(
+                              scrollDirection: Axis.horizontal,
+                              itemCount: get2.toDoTasks.length,
+                              itemBuilder: (context, index) {
+                                return InProgressCard(
+                                    task: get2.toDoTasks[index]);
+                              },
+                            )),
+                      ),
                 Padding(
-                  padding: EdgeInsets.only(left: 20),
+                  padding: const EdgeInsets.only(left: 20),
                   child: Row(
                     children: [
                       const Text(
@@ -284,7 +296,7 @@ class HomeScreen extends StatelessWidget {
                         radius: 10,
                         backgroundColor: Colors.blue.shade50,
                         child: const Text(
-                          "4",
+                          "3",
                           style:
                               TextStyle(fontSize: 12, color: Color(0xff5f33e1)),
                         ),

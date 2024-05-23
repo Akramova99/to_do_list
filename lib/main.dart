@@ -6,7 +6,6 @@ import 'package:to_do_list/pages/bottom_nav_bar.dart';
 import 'package:to_do_list/pages/main_pages/add_project.dart';
 import 'package:to_do_list/pages/splash_screen.dart';
 
-import 'model/add_task_model.dart';
 
 Future<void> main() async {
 

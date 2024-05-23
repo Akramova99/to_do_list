@@ -58,7 +58,7 @@ class _HomePageState extends State<HomePage> {
           backgroundColor: const Color(0xff5f33e1),
           shape: const CircleBorder(),
           onPressed: () {
-            Navigator.pushReplacementNamed(context, AddProject.id);
+           Get.to(AddProject());
           },
           child: const Icon(
             CupertinoIcons.add,

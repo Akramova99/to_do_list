@@ -1,27 +1,36 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:percent_indicator/linear_percent_indicator.dart';
-import 'package:to_do_list/pages/in_progress/in_progress_class.dart';
+import 'package:iconly/iconly.dart';
+import 'package:intl/intl.dart';
+import 'package:to_do_list/model/add_task_model.dart';
+
 
 class InProgressCard extends StatelessWidget {
-  final InProgressClass? card;
+  final Tasks? task;
 
-  const InProgressCard({super.key, required this.card});
+  const InProgressCard({super.key, required this.task});
 
   @override
   Widget build(BuildContext context) {
+    DateTime endDate =DateTime.parse(task!.endTime!);
+    const  List color =[
+      Color(0xffe7f3ff),
+      Color(0xffffe9e1),
+      Color(0xffede4ff),
+    ];
     return Container(
       width: 200,
            margin: const EdgeInsets.only(left: 20, top: 10, bottom: 20),
       padding: const EdgeInsets.only(left: 20),
       decoration: BoxDecoration(
-          color: card!.colorCard, borderRadius: BorderRadius.circular(20)),
+          color: task?.taskGroup! == "Work"? color[0]:( task?.taskGroup! == "Profile"?color[1]:color[2]), borderRadius: BorderRadius.circular(20)),
       child: Column(
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                card!.typeTask!,
+               task?.taskGroup! == "Work"?"Office Project"  : (task?.taskGroup! == "Daily Study"?"Daily Study":"Personal Project"),
                 style: TextStyle(
                     fontFamily: "Manrope",
                     fontWeight: FontWeight.w400,
@@ -34,13 +43,17 @@ class InProgressCard extends StatelessWidget {
                   width: 32,
                   height: 32,
                   decoration: BoxDecoration(
-                      color: card?.iconColor?.withOpacity(0.2),
+                      color: Colors.deepOrange.withOpacity(0.2),
                       borderRadius: BorderRadius.circular(10)),
                   child: Center(
                     child: Icon(
-                      card!.iconOfTask,
+                      task?.taskGroup! == "Work"
+                          ? IconlyBold.work
+                          : (task?.taskGroup! == "Daily Study"
+                          ? CupertinoIcons.book_fill
+                          : CupertinoIcons.profile_circled),
                       size: 24,
-                      color: card?.iconColor?.withOpacity(0.9),
+                      color: Colors.pink.withOpacity(0.3),
                     ),
                   ),
                 ),
@@ -52,7 +65,7 @@ class InProgressCard extends StatelessWidget {
               Expanded(
                 child: Text(
                   maxLines: 2,
-                  card!.taskName.toString(),
+                  task!.description!,
                   style: const TextStyle(
                       fontFamily: "Manrope",
                       fontWeight: FontWeight.bold,
@@ -61,23 +74,14 @@ class InProgressCard extends StatelessWidget {
               ),
             ],
           ),
-          // Row(
-          //   children: [
-          //     Padding(
-          //       padding: const EdgeInsets.only(bottom: 12.0, top: 10),
-          //       child: LinearPercentIndicator(
-          //         padding: EdgeInsets.zero,
-          //         width: 160.0,
-          //         animation: true,
-          //         lineHeight: 8.0,
-          //         percent: card!.percentTask! / 100,
-          //         barRadius: const Radius.circular(5),
-          //         backgroundColor: Colors.white,
-          //         progressColor: Colors.blue,
-          //       ),
-          //     ),
-          //   ],
-          // ),
+          Row(
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(bottom: 7.0, top: 10),
+                child: Text("Ends on ${endDate.day}th  ${DateFormat('MMMM').format(endDate)}"),
+              ),
+            ],
+          ),
         ],
       ),
     );

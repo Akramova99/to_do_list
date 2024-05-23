@@ -14,7 +14,7 @@ class HiveService extends GetxController {
 
   var objBox = Hive.box('Tasks');
   var tasksList = <Tasks>[].obs;
-  List allTasks = <Tasks>[];
+  var allTasks = <Tasks>[].obs;
 
   ///Hive yordamida obj saqlash :date time now orqali key berish
   storedObj({required var obj, required String objKey}) {
@@ -54,9 +54,40 @@ class HiveService extends GetxController {
   List<Tasks> get toDoTasks =>
       tasksList.where((task) => task.stateOfTask == 'To do').toList();
 
-// Method to filter "Done" tasks
+  // Method to filter "Done" tasks
   List<Tasks> get doneTasks =>
       tasksList.where((task) => task.stateOfTask == 'Done').toList();
+
+//New list office project
+  List<Tasks> get officeProject {
+    RxList<Tasks> doneList = allTasks;
+    return doneList.where((task) => task.taskGroup == 'Work').toList();
+  }
+
+  List<Tasks> get officeProjectDone =>
+      officeProject.where((task) => task.stateOfTask == 'Done').toList();
+
+//New list personal project
+
+  List<Tasks> get personalProject {
+    RxList<Tasks> personalList = allTasks;
+
+    return personalList.where((task) => task.taskGroup == 'Profile').toList();
+  }
+
+  List<Tasks> get personalProjectDone =>
+      personalProject.where((task) => task.stateOfTask == 'Done').toList();
+
+//New list daily study
+
+  List<Tasks> get dailyStudy {
+    RxList<Tasks> dailyList = allTasks;
+
+    return dailyList.where((task) => task.taskGroup == 'Daily Study').toList();
+  }
+
+  List<Tasks> get dailyStudyDone =>
+      dailyStudy.where((task) => task.stateOfTask == 'Done').toList();
 
   deleteObj({required String objKey}) {
     objBox.delete(objKey);
@@ -69,6 +100,6 @@ class HiveService extends GetxController {
 
   getProfile() {
     var getName = myBox.get("name");
-  return getName;
+    return getName;
   }
 }

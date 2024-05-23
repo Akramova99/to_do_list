@@ -7,8 +7,10 @@ import 'package:get/get.dart';
 import 'package:iconly/iconly.dart';
 import 'package:logger/logger.dart';
 import 'package:to_do_list/controller/check_switch.dart';
+import 'package:to_do_list/controller/is_badge_visible.dart';
 import 'package:to_do_list/controller/time_picker_controller.dart';
 import 'package:to_do_list/pages/bottom_nav_bar.dart';
+import 'package:to_do_list/pages/main_pages/notification_page.dart';
 import 'package:to_do_list/pages/main_pages/task_details.dart';
 import 'package:to_do_list/service/hive_database.dart';
 import 'package:to_do_list/string_text.dart';
@@ -28,37 +30,7 @@ class _TaskScreenState extends State<TaskScreen> with TickerProviderStateMixin {
   int selectedTabIndex = 0;
   DateTimePicker dateTimePicker = Get.put(DateTimePicker());
   IsSwitched mySelectedDate = Get.put(IsSwitched());
-
-  // void dateOldView() {
-  //
-  //  setState(() {
-  //    dateTimePicker.selectedEndDate.value =
-  //        DateTime.now();
-  //    dateTimePicker.selectedDate.value = DateTime.now();
-  //  });
-  // }
-
-  // GetTasks tasks = Get.put(GetTasks());
-  // ShowIcons showList = Get.put(ShowIcons());
-  //
-  // //SortGetTasks sortGetTasks = Get.put(SortGetTasks());
-  // ShowIcons2 taskManagement = Get.put(ShowIcons2());
-
-  // void toWork() {
-  //   taskManagement.iconChange();
-  //   showList.iconChange();
-  //   Logger().d(selectedTabIndex.toString());
-  // }
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    // get2.getObj();
-    // dateOldView();
-
-    //  toWork();
-  }
+  IsBadgeVisible visible = Get.put(IsBadgeVisible());
 
   @override
   Widget build(BuildContext context) {
@@ -83,8 +55,14 @@ class _TaskScreenState extends State<TaskScreen> with TickerProviderStateMixin {
             centerTitle: true,
             actions: [
               IconButton(
-                  onPressed: () {},
-                  icon: const Badge(child: Icon(IconlyBold.notification)))
+                  onPressed: () {
+                    Get.to(const Notifications());
+                    visible.changeBadge(false);
+                  },
+                  icon: Obx(() => Badge(
+                      isLabelVisible:
+                          get2.tasksList.isNotEmpty && visible.isVisible.value,
+                      child: Icon(IconlyBold.notification)))),
             ],
           ),
           body: Container(
@@ -183,41 +161,46 @@ class _TaskScreenState extends State<TaskScreen> with TickerProviderStateMixin {
                                   itemBuilder: (context, index) {
                                     return GestureDetector(
                                       onTap: () {
-                                        mySelectedDate.changeSwitch(get2.tasksList[index].stateOfTask=="To do"? false:true);
-                                        Get.to(
-                                            OnTapTask(
+                                        mySelectedDate.changeSwitch(
+                                            get2.tasksList[index].stateOfTask ==
+                                                    "To do"
+                                                ? false
+                                                : true);
+                                        Get.to(OnTapTask(
                                             tasks: get2.tasksList[index]));
                                       },
                                       child: allTaskView(get2.tasksList[index]),
                                     );
                                   }),
-                            )??emptySvg(),
-                        //  if (get2.tasksList.isEmpty) emptySvg(),
+                            ),
+                          //  if (get2.tasksList.isEmpty) emptySvg(),
 
                           Obx(() => ListView.builder(
-                            itemCount: get2.toDoTasks.length,
-                            itemBuilder: (context, index) {
-                              return GestureDetector(
-                                onTap: () {
-                                  mySelectedDate.changeSwitch(false);
-                                  Get.to(OnTapTask(tasks: get2.toDoTasks[index]));
+                                itemCount: get2.toDoTasks.length,
+                                itemBuilder: (context, index) {
+                                  return GestureDetector(
+                                    onTap: () {
+                                      mySelectedDate.changeSwitch(false);
+                                      Get.to(OnTapTask(
+                                          tasks: get2.toDoTasks[index]));
+                                    },
+                                    child: allTaskView(get2.toDoTasks[index]),
+                                  );
                                 },
-                                child: allTaskView(get2.toDoTasks[index]),
-                              );
-                            },
-                          )),
+                              )),
                           Obx(() => ListView.builder(
-                            itemCount: get2.doneTasks.length,
-                            itemBuilder: (context, index) {
-                              return GestureDetector(
-                                onTap: () {
-                                  mySelectedDate.changeSwitch(true);
-                                  Get.to(OnTapTask(tasks: get2.doneTasks[index]));
+                                itemCount: get2.doneTasks.length,
+                                itemBuilder: (context, index) {
+                                  return GestureDetector(
+                                    onTap: () {
+                                      mySelectedDate.changeSwitch(true);
+                                      Get.to(OnTapTask(
+                                          tasks: get2.doneTasks[index]));
+                                    },
+                                    child: allTaskView(get2.doneTasks[index]),
+                                  );
                                 },
-                                child: allTaskView(get2.doneTasks[index]),
-                              );
-                            },
-                          )),
+                              )),
                         ],
                       ),
                     ),

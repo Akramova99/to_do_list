@@ -7,7 +7,6 @@ import 'package:to_do_list/controller/pick_and_load_image.dart';
 import 'package:to_do_list/pages/bottom_nav_bar.dart';
 import 'package:to_do_list/string_text.dart';
 
-import '../controller/percent_of_tasks.dart';
 import '../service/hive_database.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -24,13 +23,12 @@ class _SplashScreenState extends State<SplashScreen>
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     get2.getTasksForSelectedDate(DateTime.now());
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      Percent
-          .updatePercentView(); // Ensure percentView is updated when the home page is opened
+      // Percent
+      //     .updatePercentView(); // Ensure percentView is updated when the home page is opened
       imageController.loadImage();
     });
   }

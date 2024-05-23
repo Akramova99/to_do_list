@@ -1,30 +1,24 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:to_do_list/pages/widgets/done_tasks.dart';
+import 'package:to_do_list/service/hive_database.dart';
 
-class CardScreen extends StatelessWidget {
+class CardScreen extends StatefulWidget {
   const CardScreen({super.key});
 
   @override
+  State<CardScreen> createState() => _CardScreenState();
+}
+
+class _CardScreenState extends State<CardScreen> {
+  @override
   Widget build(BuildContext context) {
+    HiveService get2 = Get.put(HiveService());
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.blue,
-        title: Text("tasks.taskGroup!"),
-        actions: [
-          IconButton(
-              onPressed: () {},
-              icon: Icon(
-                Icons.reorder,
-                color: Colors.black,
-              ))
-        ],
-      ),
       body: Container(
-        decoration: const BoxDecoration(
-            image: DecorationImage(
-                fit: BoxFit.cover,
-                image: AssetImage("assets/images/img_1.png"))),
+        decoration: const BoxDecoration(color: Color(0xfff9e8de)),
         child: Stack(
           children: [
             BackdropFilter(
@@ -39,6 +33,88 @@ class CardScreen extends StatelessWidget {
                 ),
               ),
             ),
+            const Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                SizedBox(
+                  height: 30,
+                ),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 12),
+                  child: Divider(),
+                ),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 12),
+                  child: Divider(),
+                ),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 12),
+                  child: Divider(),
+                ),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 12),
+                  child: Divider(),
+                ),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 12),
+                  child: Divider(),
+                ),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 12),
+                  child: Divider(),
+                ),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 12),
+                  child: Divider(),
+                ),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 12),
+                  child: Divider(),
+                ),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 12),
+                  child: Divider(),
+                ),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 12),
+                  child: Divider(),
+                ),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 12),
+                  child: Divider(),
+                ),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 12),
+                  child: Divider(),
+                ),
+              ],
+            ),
+            ListView(
+              children: [
+                const Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Done',
+                      style:
+                          TextStyle(fontWeight: FontWeight.w500, fontSize: 25),
+                    ),
+                    Icon(Icons.check_box_sharp),
+                  ],
+                ),
+                Obx(
+                  () => ListView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: get2.doneTasks.length,
+                      itemBuilder: (context, index) {
+                        return DoneTasks(
+                          task: get2.doneTasks[index],
+                        );
+                      }),
+                ),
+              ],
+            )
           ],
         ),
       ),

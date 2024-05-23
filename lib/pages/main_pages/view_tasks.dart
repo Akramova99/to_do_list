@@ -42,11 +42,25 @@ class ViewTasks extends StatelessWidget {
                 const SizedBox(
                   height: 30,
                 ),
-                IconButton(
-                    onPressed: () {
-                      Get.to(const HomePage());
-                    },
-                    icon: const Icon(IconlyBold.arrow_left)),
+                Row(
+                  children: [
+                    IconButton(
+                        onPressed: () {
+                          Get.to(const HomePage());
+                        },
+                        icon: const Icon(IconlyBold.arrow_left)),
+                    Expanded(child: Container()),
+                    const Text(
+                      "View Tasks  ",
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 22,
+                          fontFamily: "PlexSans"),
+                    ),
+                    Expanded(child: Container()),
+
+                  ],
+                ),
                 get2.tasksList.isNotEmpty
                     ? Obx(
                         () => ListView.builder(
@@ -78,7 +92,8 @@ class ViewTasks extends StatelessWidget {
   Widget emptySvg() {
     return Column(
       children: [
-         Text(title13,style: TextStyle(fontFamily: "Teachers",fontSize: 20),),
+         Text(title13,style:
+         const TextStyle(fontFamily: "Teachers",fontSize: 20),),
         SizedBox(height: 150,),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 40),

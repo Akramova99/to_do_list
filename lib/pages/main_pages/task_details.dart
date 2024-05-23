@@ -1,54 +1,52 @@
 import 'dart:ui';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:iconly/iconly.dart';
 import 'package:intl/intl.dart';
 import 'package:to_do_list/controller/check_switch.dart';
+import 'package:to_do_list/controller/is_star.dart';
 import 'package:to_do_list/controller/saveProject.dart';
 import 'package:to_do_list/controller/time_picker_controller.dart';
-import 'package:to_do_list/pages/bottom_nav_bar.dart';
 import 'package:to_do_list/service/hive_database.dart';
-import 'package:to_do_list/string_text.dart';
 
 import '../../controller/percent_of_tasks.dart';
 import '../../model/add_task_model.dart';
 
 class OnTapTask extends StatefulWidget {
-  Tasks tasks;
+  final Tasks tasks;
 
-  OnTapTask({required this.tasks, super.key});
+  const OnTapTask({required this.tasks, super.key});
 
   @override
   State<OnTapTask> createState() => _OnTapTaskState();
 }
 
 class _OnTapTaskState extends State<OnTapTask> {
-  TextEditingController taskNameCont = TextEditingController();
-
   TextEditingController descriptionCont = TextEditingController();
+  TextEditingController taskNameCont = TextEditingController();
   DateTimePicker dateTimePicker = Get.put(DateTimePicker());
-  SaveProject saveProject =Get.put(SaveProject());
+  SaveProject saveProject = Get.put(SaveProject());
   IsSwitched checkSwitch = Get.put(IsSwitched());
+  IsStar isStar =Get.put(IsStar());
   HiveService get2 = Get.put(HiveService());
 
   void taskOldView() {
     taskNameCont.text = widget.tasks.projectName!;
     descriptionCont.text = widget.tasks.description!;
-
   }
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     taskOldView();
   }
 
   @override
   Widget build(BuildContext context) {
+    DateTime startDate = DateTime.parse(widget.tasks.startDate!);
+    DateTime endDate = DateTime.parse(widget.tasks.endTime!);
+
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
@@ -69,288 +67,438 @@ class _OnTapTaskState extends State<OnTapTask> {
                 ),
               ),
             ),
-            SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(
-                    height: 30,
-                  ),
-                  Row(
-                    children: [
-                      const SizedBox(
-                        width: 10,
-                      ),
-                      IconButton(
-                          onPressed: () {
-                            Get.back();
-                          },
-                          icon: const Icon(IconlyBold.arrow_left)),
-                      const Text(
-                        "Details of Your Task",
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 22,
-                            fontFamily: "PlexSans"),
-                      ),
-                      const SizedBox(
-                        width: 20,
-                      )
-                    ],
-                  ),
-                  Container(
-                    padding:
-                        const EdgeInsets.only(left: 15, right: 15, bottom: 15),
-                    margin: const EdgeInsets.only(
-                        left: 20, bottom: 20, right: 20, top: 10),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(16),
+            CustomScrollView(
+              slivers: [
+                SliverAppBar(
+                  title: const Text(
+                    "Task Details",
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 24,
                     ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                  ),
+                  centerTitle: true,
+                  leading: IconButton(
+                    onPressed: () {
+                      Get.back();
+                    },
+                    icon: Icon(IconlyBold.arrow_left),
+                  ),
+                  actions: [
+                    SizedBox(
+                      height: 56,
+                      width: 56,
+                      child: Stack(
+                        children: [
+                          IconButton(
+                            onPressed: () {},
+                            icon: Icon(IconlyBold.notification),
+                          ),
+                        ],
+                      ),
+                    )
+                  ],
+                ),
+                const SliverToBoxAdapter(
+                  child: SizedBox(
+                    height: 15,
+                  ),
+                ),
+                SliverToBoxAdapter(
+                  child: Container(
+                    margin: const EdgeInsets.only(left: 20, right: 20),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 15, vertical: 10),
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      color: Colors.blueGrey.withOpacity(0.08),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
+                            Text(
+                              "Your Task Name",
+                              style: TextStyle(
+                                  color: Colors.grey.shade400,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w400),
+                            ),
+                            SizedBox(
+                              height: 40,
+                              width: 200,
+                              child: TextField(
+                                controller: taskNameCont,
+                                decoration: const InputDecoration(
+                                    labelStyle: TextStyle(color: Colors.black),
+                                    border: InputBorder.none),
+                              ),
+                            ),
+                          ],
+                        ),
+                        PopupMenuButton(
+                          itemBuilder: (context) => [
+                            PopupMenuItem(
+                              child: Column(
+                                children: [
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      const Text(
+                                        "Edit",
+                                        style: TextStyle(
+                                            color: Colors.black87,
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w400),
+                                      ),
+                                      IconButton(
+                                        onPressed: () {},
+                                        icon: const Icon(Icons.edit),
+                                      ),
+                                    ],
+                                  ),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      const Text(
+                                        "Delete",
+                                        style: TextStyle(
+                                            color: Colors.black87,
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w400),
+                                      ),
+                                      IconButton(
+                                        onPressed: () {},
+                                        icon: const Icon(Icons.delete),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SliverToBoxAdapter(
+                  child: SizedBox(
+                    height: 15,
+                  ),
+                ),
+                SliverToBoxAdapter(
+                  child: Container(
+                    margin: const EdgeInsets.only(left: 20, top: 15, right: 20),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 15, vertical: 10),
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      color: Colors.blueGrey.withOpacity(0.08),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Your Task's Group",
+                              style: TextStyle(
+                                  color: Colors.grey.shade400,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w400),
+                            ),
                             Text(
                               widget.tasks.taskGroup!,
                               style: const TextStyle(
-                                  fontSize: 18, fontWeight: FontWeight.w700),
+                                  fontWeight: FontWeight.w600, fontSize: 20),
                             ),
-                            Padding(
-                              padding: const EdgeInsets.only(top: 8, right: 8),
-                              child: Container(
-                                width: 32,
-                                height: 32,
-                                decoration: BoxDecoration(
-                                    color: Colors.pink.shade50,
-                                    borderRadius: BorderRadius.circular(10)),
-                                child: Center(
-                                  child: Icon(
-                                    widget.tasks.taskGroup! == "Work"
-                                        ? IconlyBold.work
-                                        : (widget.tasks.taskGroup! ==
-                                                "Daily Study"
-                                            ? CupertinoIcons.book_fill
-                                            : CupertinoIcons.profile_circled),
-                                    size: 24,
-                                    color: Colors.pink.withOpacity(0.3),
+                          ],
+                        ),
+                        PopupMenuButton(
+                          itemBuilder: (context) => [
+                            PopupMenuItem(
+                              child: Row(
+                                children: [
+                                  const Text(
+                                    "Do you want to edit?",
+                                    style: TextStyle(
+                                        color: Colors.black87,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w400),
                                   ),
-                                ),
+                                  IconButton(
+                                    onPressed: () {},
+                                    icon: const Icon(Icons.edit),
+                                  ),
+                                ],
                               ),
                             ),
                           ],
                         ),
-                        Text(
-                          title12,
-                          style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                              fontFamily: "Inter"),
-                        )
                       ],
                     ),
                   ),
-                  Container(
-                    padding:
-                        const EdgeInsets.only(left: 15, right: 15, bottom: 15),
-                    margin: const EdgeInsets.only(
-                        left: 20, bottom: 20, right: 20, top: 10),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text("Project Name"),
-                        TextField(
-                          controller: taskNameCont,
-                          decoration: const InputDecoration(
-                              //  hintText: widget.tasks.projectName,
-                              //labelText: taskNameCont.text,
-                              labelStyle: TextStyle(color: Colors.black),
-                              border: InputBorder.none),
-                        ),
-                      ],
-                    ),
+                ),
+                const SliverToBoxAdapter(
+                  child: SizedBox(
+                    height: 15,
                   ),
-                  Container(
-                    padding:
-                        const EdgeInsets.only(left: 15, right: 15, bottom: 15),
-                    margin: const EdgeInsets.only(
-                        left: 20, bottom: 20, right: 20, top: 10),
+                ),
+                SliverToBoxAdapter(
+                  child: Container(
+                    margin: const EdgeInsets.only(left: 20, top: 15, right: 20),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 15, vertical: 10),
+                    width: double.infinity,
                     decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text("Description"),
-                        TextField(
-                          controller: descriptionCont,
-                          decoration: const InputDecoration(
-                              //  hintText: widget.tasks.projectName,
-                              //labelText: taskNameCont.text,
-                              labelStyle: TextStyle(color: Colors.black),
-                              border: InputBorder.none),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Container(
-                    margin: const EdgeInsets.only(top: 20, left: 20, right: 20),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
                       borderRadius: BorderRadius.circular(10),
+                      color: Colors.blueGrey.withOpacity(0.08),
                     ),
                     child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Padding(
-                          padding: const EdgeInsets.all(10),
-                          child: SizedBox(
-                            width: 40,
-                            height: 40,
-                            child: Center(
-                              child: SvgPicture.asset(
-                                "assets/svg/Group.svg",
-                                height: 21,
-                              ),
-                            ),
-                          ),
-                        ),
                         Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text(
+                            Text(
                               "Start Date",
                               style: TextStyle(
-                                  fontSize: 12, fontWeight: FontWeight.w400),
+                                  color: Colors.grey.shade400,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w400),
                             ),
-                            Obx(
-                              () => Text(
-                                "${dateTimePicker.selectedDate.value.day} ${DateFormat('MMMM').format(dateTimePicker.selectedDate.value)} , ${dateTimePicker.selectedDate.value.year}",
-                                style: const TextStyle(
-                                    fontSize: 18, fontWeight: FontWeight.w700),
-                              ),
-                            )
-                          ],
-                        ),
-                        Expanded(child: Container()),
-                      ],
-                    ),
-                  ),
-                  Container(
-                    margin: const EdgeInsets.only(top: 20, left: 20, right: 20),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Row(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.all(10),
-                          child: SizedBox(
-                            width: 40,
-                            height: 40,
-                            child: Center(
-                              child: SvgPicture.asset(
-                                "assets/svg/Group.svg",
-                                height: 21,
-                              ),
-                            ),
-                          ),
-                        ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              "End Date",
-                              style: TextStyle(
-                                  fontSize: 12, fontWeight: FontWeight.w400),
-                            ),
-                            Obx(
-                              () => Text(
-                                "${dateTimePicker.selectedEndDate.value.day} ${DateFormat('MMMM').format(dateTimePicker.selectedEndDate.value)} , ${dateTimePicker.selectedEndDate.value.year}",
-                                style: const TextStyle(
-                                    fontSize: 18, fontWeight: FontWeight.w700),
-                              ),
-                            )
-                          ],
-                        ),
-                        Expanded(child: Container()),
-                      ],
-                    ),
-                  ),
-                  Container(
-                      margin:
-                          const EdgeInsets.only(top: 20, left: 20, right: 20),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const Padding(
-                            padding: EdgeInsets.only(left: 18.0),
-                            child: Text(
-                              "Done",
-                              style: TextStyle(
+                            Text(
+                              "${startDate.day} ${DateFormat('MMMM').format(startDate)} , ${startDate.year}",
+                              style: const TextStyle(
                                   fontSize: 18, fontWeight: FontWeight.w700),
                             ),
-                          ),
-                        Obx(() =>   Switch(
+                          ],
+                        ),
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "End Date",
+                              style: TextStyle(
+                                  color: Colors.grey.shade400,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w400),
+                            ),
+                            Text(
+                              "${endDate.day} ${DateFormat('MMMM').format(endDate)} , ${endDate.year}",
+                              style: const TextStyle(
+                                  fontSize: 18, fontWeight: FontWeight.w700),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SliverToBoxAdapter(
+                  child: SizedBox(
+                    height: 15,
+                  ),
+                ),
+                SliverToBoxAdapter(
+                  child: Container(
+                    margin: const EdgeInsets.only(left: 20, top: 15, right: 20),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 15, vertical: 10),
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      color: Colors.blueGrey.withOpacity(0.08),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Description",
+                              style: TextStyle(
+                                  color: Colors.grey.shade400,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w400),
+                            ),
+                            SizedBox(
+                              height: 40,
+                              width: 200,
+                              child: TextField(
+                                controller: descriptionCont,
+                                decoration: const InputDecoration(
+                                    labelStyle: TextStyle(color: Colors.black),
+                                    border: InputBorder.none),
+                              ),
+                            ),
+                          ],
+                        ),
+                        PopupMenuButton(
+                          itemBuilder: (context) => [
+                            PopupMenuItem(
+                              child: Row(
+                                children: [
+                                  const Text(
+                                    "Do you want to edit?",
+                                    maxLines: 5,
+                                    style: TextStyle(
+                                        color: Colors.black87,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w400),
+                                  ),
+                                  IconButton(
+                                    onPressed: () {},
+                                    icon: const Icon(Icons.edit),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SliverToBoxAdapter(
+                  child: SizedBox(
+                    height: 15,
+                  ),
+                ),
+                SliverToBoxAdapter(
+                  child: Container(
+                    margin: const EdgeInsets.only(left: 20, top: 15, right: 20),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 15, vertical: 10),
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      color: Colors.blueGrey.withOpacity(0.08),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Done",
+                              style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                          ],
+                        ),
+                        Obx(() => Switch(
                             activeColor: const Color(0xff5f33e1),
                             value: checkSwitch.isSwitched.value,
                             onChanged: (value) {
                               checkSwitch.changeSwitch(value);
                               //  changeSwitch();
                             }))
-                        ],
-                      )),
-                  const SizedBox(height: 100,)
+                      ],
+                    ),
+                  ),
+                ),
+                const SliverToBoxAdapter(
+                  child: SizedBox(
+                    height: 15,
+                  ),
+                ),
+                SliverToBoxAdapter(
+                  child: Container(
+                    margin: const EdgeInsets.only(left: 20, top: 15, right: 20),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 15, vertical: 10),
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      color: Colors.blueGrey.withOpacity(0.08),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              "If you want to change the state of task",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w500, fontSize: 13),
+                            ),
+                            Row(
+                              children: [
+                                const Text("Please tab on this button"),
+                                const SizedBox(
+                                  width: 20,
+                                ),
+                                Align(
+                                  alignment: Alignment.bottomRight,
+                                  child: InkWell(
+                                    onTap: () {
+                                      isStar.changeStar(false);
+                                      saveProject.updateProject(
+                                          taskNameCont.text.trim(),
+                                          descriptionCont.text.trim(),
+                                          widget.tasks.key!,
+                                          widget.tasks.taskGroup!,true);
 
-                ],
-              ),
-            ),
+                                      get2.getTasksForSelectedDate(
+                                          DateTime.now());
+                                      Get.find<Percent>()
+                                          .updatePercentView(); // Call updatePercentView() here
+                                    },
+                                    child: Container(
+                                      height: 22,
+                                      width: 70,
+                                      decoration: BoxDecoration(
+                                          color: const Color(0xff359fff)
+                                              .withOpacity(0.3),
+                                          borderRadius:
+                                              BorderRadius.circular(15)),
+                                      child: const Center(
+                                        child: Text(
+                                          "Update",
+                                          style: TextStyle(
+                                              color: Color(0xff359fff),
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w500),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+              ],
+            )
           ],
-        ),
-      ),
-      bottomNavigationBar: GestureDetector(
-        onTap: () {
-          saveProject.addProject(taskNameCont.text.trim(), descriptionCont.text.trim(), widget.tasks.key!,true);
-          get2.getTasksForSelectedDate(DateTime.now());
-
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            Percent
-                .updatePercentView(); // Ensure percentView is updated when the home page is opened
-          });
-        },
-        child: Container(
-          margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-          height: 50.0,
-          decoration: BoxDecoration(
-            color: const Color(0xff4147D5),
-            borderRadius: BorderRadius.circular(20.0),
-          ),
-          child: const Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                "Update Project",
-                style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 20),
-              ),
-            ],
-          ),
         ),
       ),
     );
   }
 }
+
 //
