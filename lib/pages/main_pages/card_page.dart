@@ -106,10 +106,10 @@ class _CardScreenState extends State<CardScreen> {
                   () => ListView.builder(
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
-                      itemCount: get2.doneTasks.length,
+                      itemCount: get2.allDoneTasks.length,
                       itemBuilder: (context, index) {
                         return DoneTasks(
-                          task: get2.doneTasks[index],
+                          task: get2.allDoneTasks[index],
                         );
                       }),
                 ),

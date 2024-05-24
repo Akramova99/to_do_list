@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:to_do_list/controller/get_notification.dart';
 import 'package:to_do_list/controller/profile_controller.dart';
 import 'package:to_do_list/controller/saveProject.dart';
@@ -9,6 +10,7 @@ import 'package:to_do_list/controller/time_picker_controller.dart';
 import 'package:to_do_list/service/hive_database.dart';
 
 import '../../controller/pick_and_load_image.dart';
+import '../../service/notification_channel.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -24,24 +26,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final SaveProject saveProject = Get.put(SaveProject());
   final GetNotification notification = Get.put(GetNotification());
 
-  void nextLabel() {
-    setState(() {
-      if (profileController.name.value != "Name") {
-        nameController.text = hiveService.getProfile();
-      }
-    });
-  }
-
   void note() {
     var task = hiveService.tasksList.last;
-    saveProject.updateProject(
-        task.taskGroup!, task.description!, task.key!, task.taskGroup!, false);
+    NotificationChannel.scheduleTaskNotification(
+        task, notification.getNotification.value);
+  }
+
+  Future<void> checkNotificationPermission() async {
+    var status = await Permission.notification.status;
+    if (status.isDenied) {
+      // You can request permission directly here if it has been denied previously
+      await Permission.notification.request();
+    }
   }
 
   @override
   void initState() {
     super.initState();
-    nextLabel();
+    nameController.text = hiveService.getProfile() ?? "Name";
+
+    checkNotificationPermission();
   }
 
   @override
@@ -206,6 +210,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ),
                         ],
                       ),
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 15,
+                  ),
+                  const Center(
+                    child: Text('Notifications are not allowed?'),
+                  ),
+                  Center(
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        // Open the app settings
+                        if (await Permission.notification.request().isGranted) {
+                          openAppSettings();
+                        }
+                      },
+                      child: const Text('Open Notification Settings',style: TextStyle(fontFamily: "Inter",fontWeight: FontWeight.bold),),
                     ),
                   ),
                 ],

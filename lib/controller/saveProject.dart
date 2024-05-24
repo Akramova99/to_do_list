@@ -30,7 +30,7 @@ class SaveProject extends GetxController {
           endTime: dateTimePicker.selectedEndDate.value.toString(),
           stateOfTask: isSwitched.isSwitched.value ? "Done" : 'To do',
           key: objKey,
-          star: isStar.isStar.value);
+          star: false);
       hiveService.storedObj(obj: tasks, objKey: objKey);
       visible.changeBadge(true);
       NotificationChannel.scheduleTaskNotification(
@@ -50,9 +50,8 @@ class SaveProject extends GetxController {
           endTime: dateTimePicker.selectedEndDate.value.toString(),
           stateOfTask: isSwitched.isSwitched.value ? "Done" : 'To do',
           key: objKey,
-          star: isStar.isStar.value);
+          star: isUpdate ? false : isStar.isStar.value);
       hiveService.storedObj(obj: tasks, objKey: objKey);
-      // NotificationChannel.scheduleTaskNotification(tasks, note.getNotification.value);
       isUpdate ? showToast("Update successfully") : null;
     }
   }

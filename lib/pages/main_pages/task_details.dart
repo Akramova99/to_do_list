@@ -5,7 +5,6 @@ import 'package:get/get.dart';
 import 'package:iconly/iconly.dart';
 import 'package:intl/intl.dart';
 import 'package:to_do_list/controller/check_switch.dart';
-import 'package:to_do_list/controller/is_star.dart';
 import 'package:to_do_list/controller/saveProject.dart';
 import 'package:to_do_list/controller/time_picker_controller.dart';
 import 'package:to_do_list/service/hive_database.dart';
@@ -28,7 +27,6 @@ class _OnTapTaskState extends State<OnTapTask> {
   DateTimePicker dateTimePicker = Get.put(DateTimePicker());
   SaveProject saveProject = Get.put(SaveProject());
   IsSwitched checkSwitch = Get.put(IsSwitched());
-  IsStar isStar =Get.put(IsStar());
   HiveService get2 = Get.put(HiveService());
 
   void taskOldView() {
@@ -452,13 +450,12 @@ class _OnTapTaskState extends State<OnTapTask> {
                                   alignment: Alignment.bottomRight,
                                   child: InkWell(
                                     onTap: () {
-                                      isStar.changeStar(false);
                                       saveProject.updateProject(
                                           taskNameCont.text.trim(),
                                           descriptionCont.text.trim(),
                                           widget.tasks.key!,
                                           widget.tasks.taskGroup!,true);
-
+                                      get2.tasksList();
                                       get2.getTasksForSelectedDate(
                                           DateTime.now());
                                       Get.find<Percent>()

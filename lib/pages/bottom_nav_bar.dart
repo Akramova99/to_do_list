@@ -29,10 +29,10 @@ class _HomePageState extends State<HomePage> {
   int selectedPage = 0;
 
   final List<dynamic> _pageOptions = [
-    HomeScreen(),
+    const HomeScreen(),
     const TaskScreen(),
     const CardScreen(),
-    ProfileScreen(),
+    const ProfileScreen(),
   ];
   final List<IconData> iconList = [
     IconlyBold.home,

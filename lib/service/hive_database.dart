@@ -51,12 +51,24 @@ class HiveService extends GetxController {
   }
 
   // Method to filter "To Do" tasks
-  List<Tasks> get toDoTasks =>
-      tasksList.where((task) => task.stateOfTask == 'To do').toList();
+  List<Tasks> get toDoTasks {
+    RxList<Tasks> toDO = tasksList;
+
+    return toDO.where((task) => task.stateOfTask == 'To do').toList();
+  }
 
   // Method to filter "Done" tasks
-  List<Tasks> get doneTasks =>
-      tasksList.where((task) => task.stateOfTask == 'Done').toList();
+  List<Tasks> get doneTasks {
+    RxList<Tasks> done = tasksList;
+
+    return done.where((task) => task.stateOfTask == 'Done').toList();
+  }
+
+  List<Tasks> get allDoneTasks {
+    RxList<Tasks> all = allTasks;
+
+    return all.where((task) => task.stateOfTask == 'Done').toList();
+  }
 
 //New list office project
   List<Tasks> get officeProject {

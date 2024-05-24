@@ -156,25 +156,33 @@ class _TaskScreenState extends State<TaskScreen> with TickerProviderStateMixin {
                         children: [
                           if (get2.tasksList.isNotEmpty)
                             Obx(
-                              () => ListView.builder(
-                                  itemCount: get2.tasksList.length,
-                                  itemBuilder: (context, index) {
-                                    return GestureDetector(
-                                      onTap: () {
-                                        mySelectedDate.changeSwitch(
-                                            get2.tasksList[index].stateOfTask ==
-                                                    "To do"
-                                                ? false
-                                                : true);
-                                        Get.to(OnTapTask(
-                                            tasks: get2.tasksList[index]));
-                                      },
-                                      child: allTaskView(get2.tasksList[index]),
-                                    );
-                                  }),
-                            ),
-                          //  if (get2.tasksList.isEmpty) emptySvg(),
+                              () {
+                                WidgetsBinding.instance
+                                    .addPostFrameCallback((_) {
+                                  get2.tasksList();
+                                  // Call updatePercentView() here
+                                });
+                                return ListView.builder(
+                                    itemCount: get2.tasksList.length,
+                                    itemBuilder: (context, index) {
+                                      return GestureDetector(
+                                        onTap: () {
+                                          mySelectedDate.changeSwitch(get2
+                                                      .tasksList[index]
+                                                      .stateOfTask ==
+                                                  "To do"
+                                              ? false
+                                              : true);
 
+                                          Get.to(OnTapTask(
+                                              tasks: get2.tasksList[index]));
+                                        },
+                                        child:
+                                            allTaskView(get2.tasksList[index]),
+                                      );
+                                    });
+                              },
+                            ),
                           Obx(() => ListView.builder(
                                 itemCount: get2.toDoTasks.length,
                                 itemBuilder: (context, index) {
@@ -249,11 +257,4 @@ class _TaskScreenState extends State<TaskScreen> with TickerProviderStateMixin {
     );
   }
 }
-// selectedFromCalendar.changeSelectedDate(selectedDate);
-// String day = selectedFromCalendar.mySelectedDate.toString().substring(0,10);
-// String day = selectedDate.toString().substring(0, 10);
-//get2.getSavedTasks(day);
-//  get2.dateTask(selectedDate);
-// taskManagement.changeSelectedDate(selectedDate);
 
-//`selectedDate` the new date selected.

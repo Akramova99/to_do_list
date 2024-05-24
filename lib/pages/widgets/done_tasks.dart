@@ -83,7 +83,7 @@ class _DoneTasksState extends State<DoneTasks> {
               //    task.save(); // Save the updated task in Hive
               Logger().w(widget.task.star);
             },
-            child: widget.task.star
+            child:! widget.task.star
                 ? SvgPicture.asset(
                     "assets/svg/star-svgrepo-com.svg",
                   )

@@ -1,7 +1,7 @@
 import 'package:get/get.dart';
 
 class GetNotification extends GetxController {
-  var getNotification = false.obs;
+  var getNotification = true.obs;
 
   void changeNotification() {
     getNotification.value = !getNotification.value;
