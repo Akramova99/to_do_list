@@ -22,20 +22,23 @@ class _DoneTasksState extends State<DoneTasks> {
   Widget build(BuildContext context) {
     DateTime endDate = DateTime.parse(widget.task.endTime!);
     IsStar checkStar = Get.put(IsStar());
-    IsSwitched isSwitched =Get.put(IsSwitched());
+    IsSwitched isSwitched = Get.put(IsSwitched());
     SaveProject saveProject = Get.put(SaveProject());
 
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+      padding: const EdgeInsets.only(left: 15, right: 15, bottom: 15),
+      margin: const EdgeInsets.only(left: 20, bottom: 20, right: 20, top: 10),
       decoration: BoxDecoration(
-          color: Colors.white, borderRadius: BorderRadius.circular(5)),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+      ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          SvgPicture.asset(
-            "assets/svg/check-circle-svgrepo-com.svg",
-            height: 32,
+          const Icon(
+            Icons.check_circle,
+            color: Color(0xff5f33e1),
+            size: 30,
           ),
           const SizedBox(
             width: 10,
@@ -47,7 +50,7 @@ class _DoneTasksState extends State<DoneTasks> {
                 widget.task.projectName!,
                 style: const TextStyle(
                   fontWeight: FontWeight.w500,
-                  fontFamily: "Edu",
+                  fontFamily: "Manrope",
                   color: Color(0xffa2a2a2),
                   fontSize: 22,
                   decoration: TextDecoration.lineThrough,
@@ -63,7 +66,10 @@ class _DoneTasksState extends State<DoneTasks> {
                   Text(
                     "${endDate.day}— ${DateFormat('MMMM').format(endDate)} ",
                     style: const TextStyle(
-                        color: Colors.grey, fontSize: 18, fontFamily: 'Edu'),
+                      color: Colors.grey,
+                      fontSize: 18,
+                      fontFamily: "Manrope",
+                    ),
                   ),
                 ],
               ),
@@ -79,16 +85,22 @@ class _DoneTasksState extends State<DoneTasks> {
               });
               checkStar.changeStar(widget.task.star);
               isSwitched.changeSwitch(true);
-              saveProject.updateProject(widget.task.projectName!, widget.task.description!, widget.task.key!, widget.task.taskGroup!,false);
+              saveProject.updateProject(
+                  widget.task.projectName!,
+                  widget.task.description!,
+                  widget.task.key!,
+                  widget.task.taskGroup!,
+                  false);
               //    task.save(); // Save the updated task in Hive
               Logger().w(widget.task.star);
             },
-            child:! widget.task.star
+            child: !widget.task.star
                 ? SvgPicture.asset(
                     "assets/svg/star-svgrepo-com.svg",
                   )
                 : SvgPicture.asset(
                     "assets/svg/fill_star.svg",
+                    color: const Color(0xff5f33e1),
                     height: 25,
                   ),
           ),

@@ -18,7 +18,11 @@ class _CardScreenState extends State<CardScreen> {
     HiveService get2 = Get.put(HiveService());
     return Scaffold(
       body: Container(
-        decoration: const BoxDecoration(color: Color(0xfff9e8de)),
+
+        decoration: const BoxDecoration(
+            image: DecorationImage(
+                fit: BoxFit.cover,
+                image: AssetImage("assets/images/img_1.png"))),
         child: Stack(
           children: [
             BackdropFilter(
@@ -33,62 +37,7 @@ class _CardScreenState extends State<CardScreen> {
                 ),
               ),
             ),
-            const Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                SizedBox(
-                  height: 30,
-                ),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 12),
-                  child: Divider(),
-                ),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 12),
-                  child: Divider(),
-                ),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 12),
-                  child: Divider(),
-                ),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 12),
-                  child: Divider(),
-                ),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 12),
-                  child: Divider(),
-                ),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 12),
-                  child: Divider(),
-                ),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 12),
-                  child: Divider(),
-                ),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 12),
-                  child: Divider(),
-                ),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 12),
-                  child: Divider(),
-                ),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 12),
-                  child: Divider(),
-                ),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 12),
-                  child: Divider(),
-                ),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 12),
-                  child: Divider(),
-                ),
-              ],
-            ),
+
             ListView(
               children: [
                 const Row(

@@ -116,7 +116,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   Container(
                       margin: EdgeInsets.symmetric(horizontal: 20, vertical: 7),
                       decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(20),
+                          borderRadius: BorderRadius.circular(10),
                           border: Border.all(color: Colors.black)),
                       child: Padding(
                         padding: const EdgeInsets.symmetric(
@@ -188,6 +188,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   Obx(
                     () => ListTile(
                       onTap: () async {
+                        // Open the app settings
+                        if (await Permission.notification.request().isGranted) {
+                          openAppSettings();
+                        }
                         final TimeOfDay? timeOfDay = await showTimePicker(
                             context: context,
                             initialTime: timePicker.timeOfDay.value,
@@ -206,7 +210,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ),
                           Text(
                             timePicker.timeOfDay.value.toString(),
-                            style: TextStyle(fontSize: 16, color: Colors.blue),
+                            style: const TextStyle(fontSize: 16, color: Colors.blue),
                           ),
                         ],
                       ),
@@ -215,20 +219,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   const SizedBox(
                     height: 15,
                   ),
-                  const Center(
-                    child: Text('Notifications are not allowed?'),
-                  ),
-                  Center(
-                    child: ElevatedButton(
-                      onPressed: () async {
-                        // Open the app settings
-                        if (await Permission.notification.request().isGranted) {
-                          openAppSettings();
-                        }
-                      },
-                      child: const Text('Open Notification Settings',style: TextStyle(fontFamily: "Inter",fontWeight: FontWeight.bold),),
-                    ),
-                  ),
+
                 ],
               ),
             ),
